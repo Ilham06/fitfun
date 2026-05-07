@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitScan — App Flow & Design Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Light theme base */
+  --bg:        #F5F3EE;
+  --bg2:       #EDEAE2;
+  --surface:   #FFFFFF;
+  --surface2:  #F9F8F5;
+  --border:    rgba(0,0,0,0.07);
+  --border2:   rgba(0,0,0,0.13);
+
+  /* Text */
+  --text:      #1A1814;
+  --text2:     #3D3A34;
+  --muted:     #8A8679;
+  --muted2:    #B5B0A6;
+
+  /* Brand accent — warm terracotta */
+  --accent:      #D95F2B;
+  --accent-dim:  rgba(217,95,43,0.09);
+  --accent-mid:  rgba(217,95,43,0.22);
+  --accent-light:#FFF0E9;
+
+  /* Macro colors */
+  --protein:   #C0392B;
+  --carb:      #2471A3;
+  --fat:       #D4882A;
+  --fiber:     #27AE60;
+  --water:     #1A8EAD;
+
+  /* Feature colors */
+  --food-c:    #2D9C7E;
+  --body-c:    #7B5EA7;
+  --ai-c:      #D95F2B;
+
+  --radius:    14px;
+  --radius-sm: 9px;
+  --radius-lg: 22px;
+
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Plus Jakarta Sans', sans-serif;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg:  0 12px 36px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── NAV ────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(245,243,238,0.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border2);
+  height: 58px;
+  display: flex; align-items: center;
+  padding: 0 40px; gap: 4px;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 900;
+  color: var(--accent); margin-right: 20px;
+  letter-spacing: -0.5px;
+}
+.nav-link {
+  padding: 5px 13px; border-radius: 8px;
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s; text-decoration: none;
+}
+.nav-link:hover { color: var(--text); background: var(--bg2); }
+.nav-link.active { color: var(--accent); background: var(--accent-dim); font-weight: 600; }
+.nav-spacer { flex: 1; }
+.nav-chip {
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 20px; border: 1.5px solid var(--accent-mid);
+  color: var(--accent); background: var(--accent-light);
+  letter-spacing: 0.3px;
+}
+
+/* ── LAYOUT ─────────────────────────────────── */
+.page { padding-top: 58px; }
+section {
+  padding: 72px 52px;
+  max-width: 1380px; margin: 0 auto;
+}
+.section-eyebrow {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 38px; font-weight: 900;
+  line-height: 1.1; letter-spacing: -1px;
+  margin-bottom: 14px; color: var(--text);
+}
+.section-sub {
+  color: var(--muted); font-size: 15px;
+  max-width: 520px; line-height: 1.75;
+  margin-bottom: 52px;
+}
+.full-divider { border: none; border-top: 1px solid var(--border2); }
+
+/* ── HERO ───────────────────────────────────── */
+.hero {
+  min-height: calc(100vh - 58px);
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 60px;
+  padding: 80px 52px;
+  max-width: 1380px; margin: 0 auto;
+}
+.hero-left {}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px; border-radius: 20px;
+  border: 1.5px solid var(--accent-mid);
+  background: var(--accent-light);
+  color: var(--accent); font-size: 12px; font-weight: 600;
+  margin-bottom: 28px;
+}
+.hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 84px);
+  font-weight: 900; line-height: 0.95;
+  letter-spacing: -2.5px; margin-bottom: 24px;
+  color: var(--text);
+}
+.hero-title em { color: var(--accent); font-style: italic; }
+.hero-desc {
+  color: var(--muted); font-size: 16px; line-height: 1.75;
+  max-width: 440px; margin-bottom: 44px;
+}
+.hero-stats { display: flex; gap: 40px; }
+.hero-stat-num {
+  font-family: var(--font-display); font-size: 34px; font-weight: 900;
+  color: var(--accent); line-height: 1;
+}
+.hero-stat-label { color: var(--muted); font-size: 12px; margin-top: 3px; font-weight: 500; }
+
+.hero-right {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.hero-card {
+  background: var(--surface); border-radius: var(--radius-lg);
+  padding: 22px; border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s;
+}
+.hero-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.hero-card:nth-child(1) { grid-column: span 2; }
+.hero-card-icon { font-size: 26px; margin-bottom: 10px; }
+.hero-card-name { font-family: var(--font-display); font-weight: 800; font-size: 16px; margin-bottom: 5px; }
+.hero-card-desc { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+/* ── FLOW SECTION ───────────────────────────── */
+.flow-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin-bottom: 20px;
+  overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.flow-block-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 22px 28px; border-bottom: 1px solid var(--border);
+}
+.flow-block-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+}
+.flow-block-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+.flow-block-sub { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.flow-steps { padding: 0 28px; }
+.flow-step {
+  display: flex; gap: 18px; padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.flow-step:last-child { border-bottom: none; }
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.step-name { font-weight: 700; font-size: 13.5px; margin-bottom: 3px; }
+.step-desc { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.step-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.step-tag {
+  font-size: 10.5px; font-weight: 600; padding: 2px 8px;
+  border-radius: 5px;
+}
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 0; gap: 10px; color: var(--muted2); font-size: 12px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.flow-arrow-line { flex: 1; height: 1px; background: var(--border2); max-width: 60px; }
+
+/* ── SCREEN CARDS ───────────────────────────── */
+.screen-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px;
+}
+.screen-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-sm); transition: all 0.18s;
+}
+.screen-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--border2); }
+.screen-card-icon { font-size: 22px; margin-bottom: 10px; }
+.screen-card-name { font-family: var(--font-display); font-weight: 800; font-size: 14px; margin-bottom: 3px; }
+.screen-card-route { font-family: monospace; font-size: 10.5px; color: var(--muted); margin-bottom: 8px; }
+.screen-card-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.screen-features { margin-top: 10px; display: flex; flex-direction: column; gap: 3px; }
+.screen-feature { font-size: 11px; color: var(--text2); display: flex; gap: 6px; align-items: flex-start; }
+.screen-feature::before { content: '›'; color: var(--accent); font-size: 13px; line-height: 1.2; flex-shrink: 0; }
+
+/* ── DESIGN TOKENS ──────────────────────────── */
+.token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
+.token-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm);
+}
+.token-title { font-weight: 700; font-size: 13px; margin-bottom: 18px; color: var(--text2); letter-spacing: 0.3px; }
+
+/* Color swatches */
+.swatch-list { display: flex; flex-direction: column; gap: 9px; }
+.swatch-row { display: flex; align-items: center; gap: 11px; }
+.swatch { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.06); }
+.swatch-name { font-weight: 600; font-size: 12.5px; color: var(--text); }
+.swatch-hex { font-family: monospace; font-size: 10.5px; color: var(--muted); }
+.swatch-role { font-size: 11px; color: var(--muted2); }
+
+/* Typography */
+.type-list { display: flex; flex-direction: column; gap: 18px; }
+.type-meta-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted2); margin-bottom: 3px; }
+.type-meta-note { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+
+/* Spacing */
+.space-list { display: flex; flex-direction: column; gap: 7px; }
+.space-row { display: flex; align-items: center; gap: 10px; }
+.space-bar { height: 7px; background: var(--accent-mid); border-radius: 4px; flex-shrink: 0; }
+.space-val { font-family: monospace; font-size: 10.5px; color: var(--accent); width: 28px; }
+.space-use { font-size: 11px; color: var(--muted); }
+
+/* Radius */
+.radius-list { display: flex; gap: 14px; flex-wrap: wrap; }
+.radius-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.radius-box { width: 52px; height: 52px; background: var(--bg2); border: 2px solid var(--border2); }
+.radius-label { font-size: 10.5px; color: var(--muted); text-align: center; }
+
+/* ── COMPONENTS ─────────────────────────────── */
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.comp-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm);
+}
+.comp-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border-radius: 10px;
+  font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(217,95,43,0.28); }
+.btn-primary:hover { background: #C4501E; transform: translateY(-1px); }
+.btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--bg); border-color: var(--accent-mid); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
+.btn-ghost:hover { color: var(--text); }
+.btn-danger { background: rgba(192,57,43,0.08); color: var(--protein); border: 1px solid rgba(192,57,43,0.18); }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+.btn-icon { width: 38px; height: 38px; padding: 0; justify-content: center; border-radius: 10px; background: var(--bg2); border: 1px solid var(--border2); color: var(--text); font-size: 16px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* Macro ring */
+.ring-wrap { display: flex; align-items: center; gap: 20px; }
+.ring-rel { position: relative; }
+.ring-center-abs {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-num { font-family: var(--font-display); font-size: 20px; font-weight: 900; color: var(--accent); line-height: 1; }
+.ring-lbl { font-size: 9.5px; color: var(--muted); margin-top: 1px; }
+.legend { display: flex; flex-direction: column; gap: 7px; }
+.legend-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Nutrition card */
+.nut-card {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); padding: 15px;
+}
+.nut-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.nut-name { font-weight: 700; font-size: 14.5px; }
+.nut-portion { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.nut-cal { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--accent); line-height: 1; }
+.nut-cal-lbl { font-size: 10.5px; color: var(--muted); }
+.macro-rows { display: flex; flex-direction: column; gap: 7px; }
+.macro-row { display: flex; align-items: center; gap: 9px; }
+.macro-lbl { width: 46px; font-size: 11px; color: var(--muted); }
+.macro-track { flex: 1; height: 5px; background: var(--bg2); border-radius: 3px; }
+.macro-fill { height: 100%; border-radius: 3px; }
+.macro-val { width: 32px; text-align: right; font-size: 11px; color: var(--text2); font-weight: 500; }
+
+/* Progress bars */
+.prog-list { display: flex; flex-direction: column; gap: 13px; }
+.prog-meta { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.prog-name { font-size: 13px; font-weight: 500; }
+.prog-val { font-size: 12.5px; color: var(--muted); }
+.prog-track { height: 8px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 4px; }
+
+/* Input */
+.inp-list { display: flex; flex-direction: column; gap: 12px; }
+.inp-label { font-size: 11.5px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+.inp-wrap { position: relative; }
+.inp-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted2); }
+.inp {
+  width: 100%; background: var(--bg2); border: 1.5px solid var(--border2);
+  border-radius: 9px; padding: 9px 12px 9px 34px;
+  font-family: var(--font-body); font-size: 13.5px; color: var(--text);
+  outline: none; transition: border-color 0.18s;
+}
+.inp:focus { border-color: var(--accent); background: var(--surface); }
+.inp::placeholder { color: var(--muted2); }
+.inp-plain { padding: 9px 12px; }
+.inp-row { display: flex; gap: 10px; }
+
+/* Program selector */
+.prog-pills { display: flex; gap: 10px; }
+.prog-pill {
+  flex: 1; padding: 16px 12px; border-radius: var(--radius);
+  border: 2px solid var(--border2); background: var(--surface2);
+  text-align: center; cursor: pointer; transition: all 0.16s;
+}
+.prog-pill:hover { border-color: var(--accent-mid); background: var(--accent-light); }
+.prog-pill.sel { border-color: var(--accent); background: var(--accent-light); }
+.prog-icon { font-size: 24px; margin-bottom: 6px; }
+.prog-name { font-family: var(--font-display); font-weight: 800; font-size: 13.5px; margin-bottom: 3px; }
+.prog-desc { font-size: 10.5px; color: var(--muted); }
+
+/* Scan mode card */
+.scan-modes { display: flex; gap: 10px; }
+.scan-mode {
+  flex: 1; padding: 18px 14px; border-radius: var(--radius);
+  border: 2px solid var(--border); background: var(--surface2);
+  cursor: pointer; transition: all 0.16s; text-align: center;
+}
+.scan-mode.active-food { border-color: var(--food-c); background: rgba(45,156,126,0.06); }
+.scan-mode.active-body { border-color: var(--body-c); background: rgba(123,94,167,0.06); }
+.scan-mode-icon { font-size: 28px; margin-bottom: 8px; }
+.scan-mode-name { font-weight: 700; font-size: 13.5px; margin-bottom: 3px; }
+.scan-mode-desc { font-size: 11px; color: var(--muted); }
+.scan-badge {
+  display: inline-block; margin-top: 8px; padding: 2px 8px;
+  border-radius: 5px; font-size: 10.5px; font-weight: 700;
+}
+
+/* Tab bar */
+.tab-bar {
+  background: var(--surface); border: 1.5px solid var(--border2);
+  border-radius: 18px; padding: 6px;
+  display: inline-flex; gap: 3px;
+  box-shadow: var(--shadow-md);
+}
+.tab-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 7px 18px; border-radius: 13px;
+  cursor: pointer; transition: background 0.15s;
+  color: var(--muted); font-size: 9.5px; font-weight: 700; min-width: 58px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.tab-item.active { background: var(--accent-light); color: var(--accent); }
+.tab-icon { font-size: 18px; }
+.tab-fab {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: -10px;
+  box-shadow: 0 4px 14px rgba(217,95,43,0.35);
+  cursor: pointer;
+}
+
+/* Toast */
+.toast {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 16px; border-radius: 11px;
+  background: var(--surface); border: 1px solid var(--border2);
+  font-size: 12.5px; box-shadow: var(--shadow-md);
+}
+.toast-ok  { border-left: 3px solid var(--fiber); }
+.toast-err { border-left: 3px solid var(--protein); }
+.toast-ai  { border-left: 3px solid var(--accent); }
+
+/* Step indicator */
+.step-indicator { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+.step-dot {
+  width: 28px; height: 5px; border-radius: 3px; background: var(--bg2);
+  transition: background 0.2s;
+}
+.step-dot.done { background: var(--accent); }
+.step-dot.active { background: var(--accent); width: 44px; }
+
+/* ── DATA MODELS ────────────────────────────── */
+.model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 48px; }
+.model-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.model-head {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 9px;
+  background: var(--surface2);
+}
+.model-icon { font-size: 16px; }
+.model-name { font-family: var(--font-display); font-weight: 800; font-size: 14px; }
+.model-row { display: flex; padding: 8px 18px; border-bottom: 1px solid var(--border); }
+.model-row:last-child { border-bottom: none; }
+.mf { width: 110px; font-family: monospace; font-size: 11px; color: #1A6BA0; flex-shrink: 0; }
+.mt { width: 72px; font-family: monospace; font-size: 11px; color: #7B5EA7; flex-shrink: 0; }
+.mn { font-size: 11px; color: var(--muted); }
+.mpk { color: var(--accent) !important; font-weight: 700; }
+
+/* ── API ROUTES ─────────────────────────────── */
+.api-list { display: flex; flex-direction: column; gap: 7px; }
+.api-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow-sm); transition: border-color 0.15s;
+}
+.api-row:hover { border-color: var(--border2); }
+.method {
+  font-family: monospace; font-size: 10.5px; font-weight: 700;
+  padding: 3px 7px; border-radius: 5px; width: 44px; text-align: center; flex-shrink: 0;
+}
+.GET    { background: rgba(39,174,96,0.10);  color: #1E8C56; }
+.POST   { background: rgba(217,95,43,0.10);  color: var(--accent); }
+.PATCH  { background: rgba(212,136,42,0.10); color: var(--fat); }
+.DELETE { background: rgba(192,57,43,0.10);  color: var(--protein); }
+.api-path { font-family: monospace; font-size: 12px; color: var(--text); flex: 1; }
+.api-desc { font-size: 12px; color: var(--muted); flex: 1; }
+.auth-badge { font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 5px; background: rgba(36,113,163,0.1); color: var(--carb); flex-shrink: 0; }
+.api-group-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted2); padding: 4px 0; margin-top: 6px; }
+
+/* ── FADE IN ────────────────────────────────── */
+.fade { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+.fade.in { opacity: 1; transform: none; }
+
+/* ── FOOTER ─────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border2);
+  padding: 28px 52px; display: flex; align-items: center;
+  justify-content: space-between; color: var(--muted2);
+  font-size: 12px; max-width: 1380px; margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  section { padding: 56px 22px; }
+  nav { padding: 0 18px; }
+  .hero { grid-template-columns: 1fr; padding: 60px 22px; }
+  .hero-right { display: none; }
+  .comp-grid { grid-template-columns: 1fr; }
+  .prog-pills { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">FitScan</div>
+  <a class="nav-link active" href="#flow">Flow</a>
+  <a class="nav-link" href="#screens">Screens</a>
+  <a class="nav-link" href="#design">Design</a>
+  <a class="nav-link" href="#components">Components</a>
+  <a class="nav-link" href="#data">Data & API</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-chip">v1.1 · Light Theme</div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div> App Flow & Design Reference</div>
+    <h1 class="hero-title">FitScan<br><em>Design</em><br>System</h1>
+    <p class="hero-desc">Full user flow, screen map, design tokens, component library, data models, and API routes for the FitScan PWA — built on Next.js 15 + OpenAI.</p>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">9</div><div class="hero-stat-label">Screens</div></div>
+      <div><div class="hero-stat-num">2</div><div class="hero-stat-label">Scan Modes</div></div>
+      <div><div class="hero-stat-num">22</div><div class="hero-stat-label">API Routes</div></div>
+      <div><div class="hero-stat-num">GPT-4o</div><div class="hero-stat-label">All AI Features</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hero-card-icon">🎯</div>
+      <div class="hero-card-name">What changed in v1.1</div>
+      <div class="hero-card-desc">All scans (food recognition, barcode lookup, body measurement OCR) now route through OpenAI GPT-4o Vision. The AI Coach tab is removed — AI-generated guidance surfaces inline on the Dashboard. Light theme throughout.</div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">📷</div>
+      <div class="hero-card-name">Food Scan</div>
+      <div class="hero-card-desc">Camera → GPT-4o Vision returns dish name, portion, macros JSON in under 3s.</div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">📏</div>
+      <div class="hero-card-name">Body Scan</div>
+      <div class="hero-card-desc">Photo of tape or written note → GPT-4o Vision extracts and maps measurement values.</div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🏗️</div>
+      <div class="hero-card-name">Stack</div>
+      <div class="hero-card-desc">Next.js 15 · PostgreSQL · Prisma · OpenAI API · NextAuth.js v5 (Google OAuth)</div>
+    </div>
+  </div>
+</div>
+
+<hr class="full-divider">
+
+<!-- ═══ APP FLOW ═══ -->
+<section id="flow">
+  <div class="section-eyebrow">App Flow</div>
+  <h2 class="section-title">Full User Journey</h2>
+  <p class="section-sub">From first PWA launch through daily use. 4 tabs: Home, Scan, Progress, Profile.</p>
+
+  <!-- ENTRY -->
+  <div class="flow-block fade">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:var(--accent-light);color:var(--accent)">🚀</div>
+      <div>
+        <div class="flow-block-title">Phase 0 — App Entry</div>
+        <div class="flow-block-sub">PWA launch → session check → route to correct screen</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:var(--accent-light);color:var(--accent)">1</div>
+        <div>
+          <div class="step-name">PWA Launch / Splash</div>
+          <div class="step-desc">App opens. Splash screen displayed for max 1.5s while middleware resolves NextAuth session.</div>
+          <div class="step-tags"><span class="step-tag" style="background:var(--accent-dim);color:var(--accent)">/ (root)</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:var(--accent-light);color:var(--accent)">2</div>
+        <div>
+          <div class="step-name">Route Decision (middleware)</div>
+          <div class="step-desc">
+            <strong>No session</strong> → /login &nbsp;·&nbsp;
+            <strong>Session + onboardingDone</strong> → /dashboard &nbsp;·&nbsp;
+            <strong>Session + no profile</strong> → /onboarding/profile
+          </div>
+          <div class="step-tags">
+            <span class="step-tag" style="background:rgba(36,113,163,0.1);color:var(--carb)">Next.js middleware.ts</span>
+            <span class="step-tag" style="background:var(--accent-dim);color:var(--accent)">NextAuth getServerSession</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"><div class="flow-arrow-line"></div>continues<div class="flow-arrow-line"></div></div>
+
+  <!-- AUTH -->
+  <div class="flow-block fade">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:rgba(36,113,163,0.1);color:var(--carb)">🔐</div>
+      <div>
+        <div class="flow-block-title">Phase 1 — Authentication</div>
+        <div class="flow-block-sub">Google OAuth only · NextAuth.js v5 · no passwords</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(36,113,163,0.1);color:var(--carb)">1</div>
+        <div>
+          <div class="step-name">Login Screen</div>
+          <div class="step-desc">FitScan logo, tagline, single "Continue with Google" CTA. No email/password. Privacy policy link below.</div>
+          <div class="step-tags"><span class="step-tag" style="background:rgba(36,113,163,0.1);color:var(--carb)">/login</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(36,113,163,0.1);color:var(--carb)">2</div>
+        <div>
+          <div class="step-name">Google OAuth + Session</div>
+          <div class="step-desc">Redirect → Google consent → /api/auth/callback/google → NextAuth upserts User in PostgreSQL via Prisma → JWT session issued.</div>
+          <div class="step-tags"><span class="step-tag" style="background:rgba(36,113,163,0.1);color:var(--carb)">/api/auth/[...nextauth]</span><span class="step-tag" style="background:rgba(123,94,167,0.1);color:var(--body-c)">Prisma upsert User</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(36,113,163,0.1);color:var(--carb)">3</div>
+        <div>
+          <div class="step-name">Post-Auth Redirect</div>
+          <div class="step-desc">Check <code style="font-size:11px;background:var(--bg2);padding:1px 5px;border-radius:4px">user.onboardingDone</code>. True → /dashboard. False → /onboarding/profile.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"><div class="flow-arrow-line"></div>first-time only<div class="flow-arrow-line"></div></div>
+
+  <!-- ONBOARDING -->
+  <div class="flow-block fade">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:rgba(212,136,42,0.1);color:var(--fat)">📋</div>
+      <div>
+        <div class="flow-block-title">Phase 2 — Onboarding Wizard</div>
+        <div class="flow-block-sub">4 steps · back/next navigation · progress indicator · blocked until complete</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(212,136,42,0.1);color:var(--fat)">1</div>
+        <div>
+          <div class="step-name">Profile — /onboarding/profile</div>
+          <div class="step-desc">Name (pre-filled from Google account), age, gender, current weight (kg/lbs toggle), height (cm/ft toggle).</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(212,136,42,0.1);color:var(--fat)">2</div>
+        <div>
+          <div class="step-name">Program — /onboarding/program</div>
+          <div class="step-desc">3 pill cards: <strong>Bulking</strong> (+15% cal · build mass), <strong>Cutting</strong> (−20% cal · lose fat), <strong>Maintenance</strong> (= TDEE · stay steady). Only one selectable.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(212,136,42,0.1);color:var(--fat)">3</div>
+        <div>
+          <div class="step-name">Activity Level — /onboarding/activity</div>
+          <div class="step-desc">4 options with multipliers: Sedentary ×1.2 · Lightly Active ×1.375 · Moderately Active ×1.55 · Very Active ×1.725. Used in Mifflin-St Jeor TDEE formula.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(212,136,42,0.1);color:var(--fat)">4</div>
+        <div>
+          <div class="step-name">Goal & Review — /onboarding/goal</div>
+          <div class="step-desc">Optional target weight. Auto-calculated TDEE, daily cal target, macro split (P 30% / C 45% / F 25%) shown live. Confirm → POST /api/profile → set onboardingDone = true → redirect /dashboard.</div>
+          <div class="step-tags">
+            <span class="step-tag" style="background:rgba(39,174,96,0.1);color:var(--fiber)">Mifflin-St Jeor BMR</span>
+            <span class="step-tag" style="background:rgba(212,136,42,0.1);color:var(--fat)">TDEE × program modifier</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"><div class="flow-arrow-line"></div>authenticated shell<div class="flow-arrow-line"></div></div>
+
+  <!-- MAIN APP -->
+  <div class="flow-block fade">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:var(--accent-light);color:var(--accent)">🏠</div>
+      <div>
+        <div class="flow-block-title">Phase 3 — Main App (4-tab Shell)</div>
+        <div class="flow-block-sub">Bottom tab nav · Home · Scan (FAB) · Progress · Profile</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:var(--accent-light);color:var(--accent)">🏠</div>
+        <div>
+          <div class="step-name">Home / Dashboard — /dashboard</div>
+          <div class="step-desc">Macro ring summary (4 rings), today's meal log grouped by type (B/L/D/Snack), water tracker, streak counter, inline AI daily tip card (GPT-4o, generated once per day, cached).</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">📷</div>
+        <div>
+          <div class="step-name">Scan — /scan</div>
+          <div class="step-desc">Central FAB. Opens scan screen with mode toggle: <strong style="color:var(--food-c)">Food</strong> (camera / gallery / barcode) or <strong style="color:var(--body-c)">Body</strong> (camera / gallery for measurement photo). Both modes use GPT-4o Vision.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(36,113,163,0.1);color:var(--carb)">📊</div>
+        <div>
+          <div class="step-name">Progress — /progress</div>
+          <div class="step-desc">Weight chart with goal overlay, per-metric body measurement charts, macro adherence bars (weekly), 30-day calorie trend, composition delta summary cards.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:var(--bg2);color:var(--muted)">👤</div>
+        <div>
+          <div class="step-name">Profile — /profile</div>
+          <div class="step-desc">Edit profile & recalculate TDEE, change program, notification preferences, export data as CSV, sign out.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"><div class="flow-arrow-line"></div>feature flows<div class="flow-arrow-line"></div></div>
+
+  <!-- FOOD SCAN FLOW -->
+  <div class="flow-block fade">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:rgba(45,156,126,0.1);color:var(--food-c)">🍎</div>
+      <div>
+        <div class="flow-block-title">Feature Flow A — Food Scan & Log</div>
+        <div class="flow-block-sub">All recognition via GPT-4o Vision · barcode fallback to Open Food Facts</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">1</div>
+        <div>
+          <div class="step-name">Open Scan → Food Mode</div>
+          <div class="step-desc">Camera viewfinder opens. Three entry paths: Live camera snap, Gallery import, or "Search food manually" text input fallback.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">2a</div>
+        <div>
+          <div class="step-name">Image Capture → GPT-4o Vision</div>
+          <div class="step-desc">Photo (any food or packaged label) → POST /api/food/scan → image sent to OpenAI with system prompt → returns JSON: <code style="font-size:11px;background:var(--bg2);padding:1px 5px;border-radius:4px">&#123; name, portionG, kcal, proteinG, carbG, fatG, fiberG, sodiumMg, confidence &#125;</code></div>
+          <div class="step-tags"><span class="step-tag" style="background:rgba(45,156,126,0.1);color:var(--food-c)">GPT-4o Vision (gpt-4o)</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">2b</div>
+        <div>
+          <div class="step-name">Barcode Detected (ZXing)</div>
+          <div class="step-desc">ZXing auto-detects EAN-13/UPC-A in viewfinder frame → POST /api/food/barcode → query Open Food Facts API → if found, return structured nutrition. If not found, fall back to GPT-4o Vision with the product photo.</div>
+          <div class="step-tags"><span class="step-tag" style="background:rgba(45,156,126,0.1);color:var(--food-c)">ZXing + Open Food Facts</span><span class="step-tag" style="background:rgba(45,156,126,0.1);color:var(--food-c)">GPT-4o fallback</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">3</div>
+        <div>
+          <div class="step-name">Nutrition Result Card — /scan/result</div>
+          <div class="step-desc">Food name (editable), confidence badge, full macro breakdown, portion slider (0.5× – 3×, all values scale live), meal tag picker (Breakfast / Lunch / Dinner / Snack).</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(45,156,126,0.1);color:var(--food-c)">4</div>
+        <div>
+          <div class="step-name">Save → Dashboard Update</div>
+          <div class="step-desc">POST /api/food/log → Prisma creates FoodLog → Dashboard macro rings update optimistically → success toast. User returns to Dashboard or stays on Scan to add another item.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY SCAN FLOW -->
+  <div class="flow-block fade" style="margin-top:16px">
+    <div class="flow-block-header">
+      <div class="flow-block-icon" style="background:rgba(123,94,167,0.1);color:var(--body-c)">📏</div>
+      <div>
+        <div class="flow-block-title">Feature Flow B — Body Measurement Scan</div>
+        <div class="flow-block-sub">Photo → GPT-4o Vision extracts + maps measurement fields</div>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(123,94,167,0.1);color:var(--body-c)">1</div>
+        <div>
+          <div class="step-name">Open Scan → Body Mode</div>
+          <div class="step-desc">Camera or gallery picker. On-screen overlay guide for framing measurement tape, scale display, or handwritten note for best accuracy.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(123,94,167,0.1);color:var(--body-c)">2</div>
+        <div>
+          <div class="step-name">Image → GPT-4o Vision Extraction</div>
+          <div class="step-desc">Photo → POST /api/body/scan → sent to OpenAI GPT-4o with structured prompt → returns JSON mapping: <code style="font-size:11px;background:var(--bg2);padding:1px 5px;border-radius:4px">&#123; weightKg, waistCm, chestCm, hipsCm, armsCm, thighsCm, neckCm, bodyFatPct &#125;</code>. Unknown fields returned as null.</div>
+          <div class="step-tags"><span class="step-tag" style="background:rgba(123,94,167,0.1);color:var(--body-c)">GPT-4o Vision (gpt-4o)</span><span class="step-tag" style="background:rgba(123,94,167,0.1);color:var(--body-c)">Structured JSON output</span></div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(123,94,167,0.1);color:var(--body-c)">3</div>
+        <div>
+          <div class="step-name">Confirmation Screen — /scan/body-confirm</div>
+          <div class="step-desc">Each extracted value shown in editable field. Null fields left blank for manual fill. BMI auto-calculated live from weight + stored height. Delta vs. previous entry shown in green/red.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:rgba(123,94,167,0.1);color:var(--body-c)">4</div>
+        <div>
+          <div class="step-name">Save → Progress Charts Update</div>
+          <div class="step-desc">POST /api/body/log → Prisma creates BodyMeasurement with timestamp → Progress tab charts update immediately. Success toast confirms save.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="full-divider">
+
+<!-- ═══ SCREENS ═══ -->
+<section id="screens">
+  <div class="section-eyebrow">Screen Map</div>
+  <h2 class="section-title">All Screens</h2>
+  <p class="section-sub">9 screens across 4 navigation destinations. No AI Coach tab — AI surfaces inline on Dashboard.</p>
+
+  <div class="screen-grid fade">
+    <div class="screen-card" style="border-top:3px solid var(--accent)">
+      <div class="screen-card-icon">🚀</div>
+      <div class="screen-card-name">Splash</div>
+      <div class="screen-card-route">/</div>
+      <div class="screen-card-desc">Session check. 1.5s max. Auto-redirects.</div>
+      <div class="screen-features">
+        <div class="screen-feature">FitScan wordmark + loading indicator</div>
+        <div class="screen-feature">Middleware resolves session</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--carb)">
+      <div class="screen-card-icon">🔐</div>
+      <div class="screen-card-name">Login</div>
+      <div class="screen-card-route">/login</div>
+      <div class="screen-card-desc">Single entry point. Google OAuth only.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Hero illustration + tagline</div>
+        <div class="screen-feature">Continue with Google button</div>
+        <div class="screen-feature">Privacy policy link</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--fat)">
+      <div class="screen-card-icon">📋</div>
+      <div class="screen-card-name">Onboarding</div>
+      <div class="screen-card-route">/onboarding/*</div>
+      <div class="screen-card-desc">4-step wizard. Required before any feature.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Step progress indicator (dots)</div>
+        <div class="screen-feature">Profile → Program → Activity → Goal</div>
+        <div class="screen-feature">Live TDEE preview on step 4</div>
+        <div class="screen-feature">Back/Next navigation</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--accent)">
+      <div class="screen-card-icon">🏠</div>
+      <div class="screen-card-name">Dashboard</div>
+      <div class="screen-card-route">/dashboard</div>
+      <div class="screen-card-desc">Daily nutrition HQ with inline AI tip.</div>
+      <div class="screen-features">
+        <div class="screen-feature">AI daily tip card (GPT-4o, cached/day)</div>
+        <div class="screen-feature">4-macro ring summary</div>
+        <div class="screen-feature">Meal log (B / L / D / Snack)</div>
+        <div class="screen-feature">Water intake progress bar</div>
+        <div class="screen-feature">Streak badge</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--food-c)">
+      <div class="screen-card-icon">📷</div>
+      <div class="screen-card-name">Scan</div>
+      <div class="screen-card-route">/scan</div>
+      <div class="screen-card-desc">Camera-first. Food or Body mode.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Mode toggle: Food / Body</div>
+        <div class="screen-feature">Live camera viewfinder</div>
+        <div class="screen-feature">Barcode auto-detect frame</div>
+        <div class="screen-feature">Gallery import button</div>
+        <div class="screen-feature">Manual search fallback</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--food-c)">
+      <div class="screen-card-icon">🍽️</div>
+      <div class="screen-card-name">Food Result</div>
+      <div class="screen-card-route">/scan/result</div>
+      <div class="screen-card-desc">Confirm + log a scanned food item.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Editable food name</div>
+        <div class="screen-feature">Full macro breakdown card</div>
+        <div class="screen-feature">Portion slider (0.5× – 3×)</div>
+        <div class="screen-feature">Meal tag selector</div>
+        <div class="screen-feature">Confidence badge (GPT-4o %)</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--body-c)">
+      <div class="screen-card-icon">📏</div>
+      <div class="screen-card-name">Body Confirm</div>
+      <div class="screen-card-route">/scan/body-confirm</div>
+      <div class="screen-card-desc">Review GPT-4o extracted measurements.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Editable field per measurement</div>
+        <div class="screen-feature">BMI live-calculated</div>
+        <div class="screen-feature">Delta vs. last entry</div>
+        <div class="screen-feature">Null fields left blank for manual fill</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--carb)">
+      <div class="screen-card-icon">📊</div>
+      <div class="screen-card-name">Progress</div>
+      <div class="screen-card-route">/progress</div>
+      <div class="screen-card-desc">Charts & history over time.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Weight line chart + goal line</div>
+        <div class="screen-feature">Per-metric body charts</div>
+        <div class="screen-feature">Weekly macro adherence bars</div>
+        <div class="screen-feature">30-day calorie trend</div>
+        <div class="screen-feature">Composition delta cards</div>
+      </div>
+    </div>
+    <div class="screen-card" style="border-top:3px solid var(--muted2)">
+      <div class="screen-card-icon">👤</div>
+      <div class="screen-card-name">Profile</div>
+      <div class="screen-card-route">/profile</div>
+      <div class="screen-card-desc">Settings & account management.</div>
+      <div class="screen-features">
+        <div class="screen-feature">Edit profile + recalculate TDEE</div>
+        <div class="screen-feature">Change program</div>
+        <div class="screen-feature">Notification preferences</div>
+        <div class="screen-feature">Export data (CSV)</div>
+        <div class="screen-feature">Sign out</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="full-divider">
+
+<!-- ═══ DESIGN TOKENS ═══ -->
+<section id="design">
+  <div class="section-eyebrow">Design System</div>
+  <h2 class="section-title">Design Tokens</h2>
+  <p class="section-sub">Light theme palette, Playfair Display + Plus Jakarta Sans, 4px base spacing, and a warm terracotta accent system.</p>
+
+  <div class="token-grid fade">
+
+    <!-- COLORS - spanning 2 cols -->
+    <div class="token-card" style="grid-column:span 2">
+      <div class="token-title">Color Palette</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="swatch-list">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px">Foundation</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#F5F3EE"></div>
+            <div><div class="swatch-name">Warm Cream</div><div class="swatch-hex">#F5F3EE</div><div class="swatch-role">App background</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#FFFFFF;border:1px solid #e0ddd8"></div>
+            <div><div class="swatch-name">Pure White</div><div class="swatch-hex">#FFFFFF</div><div class="swatch-role">Cards, surfaces</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#F9F8F5;border:1px solid #e8e5e0"></div>
+            <div><div class="swatch-name">Off-White</div><div class="swatch-hex">#F9F8F5</div><div class="swatch-role">Input fields, nested cards</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#1A1814"></div>
+            <div><div class="swatch-name">Near Black</div><div class="swatch-hex">#1A1814</div><div class="swatch-role">Primary text</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#8A8679"></div>
+            <div><div class="swatch-name">Warm Gray</div><div class="swatch-hex">#8A8679</div><div class="swatch-role">Secondary text, labels</div></div>
+          </div>
+          <div style="height:8px"></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px">Accent</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#D95F2B"></div>
+            <div><div class="swatch-name">Terracotta — Primary</div><div class="swatch-hex">#D95F2B</div><div class="swatch-role">CTAs, active states, brand</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#FFF0E9;border:1px solid rgba(217,95,43,0.2)"></div>
+            <div><div class="swatch-name">Terracotta Light</div><div class="swatch-hex">#FFF0E9</div><div class="swatch-role">Active pill backgrounds, chips</div></div>
+          </div>
+        </div>
+        <div class="swatch-list">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px">Macros</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#C0392B"></div>
+            <div><div class="swatch-name">Crimson — Protein</div><div class="swatch-hex">#C0392B</div><div class="swatch-role">Protein macro ring & bars</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#2471A3"></div>
+            <div><div class="swatch-name">Ocean — Carbs</div><div class="swatch-hex">#2471A3</div><div class="swatch-role">Carbohydrate macro</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#D4882A"></div>
+            <div><div class="swatch-name">Amber — Fat</div><div class="swatch-hex">#D4882A</div><div class="swatch-role">Fat macro</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#27AE60"></div>
+            <div><div class="swatch-name">Emerald — Fiber</div><div class="swatch-hex">#27AE60</div><div class="swatch-role">Fiber, success states</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#1A8EAD"></div>
+            <div><div class="swatch-name">Teal — Water</div><div class="swatch-hex">#1A8EAD</div><div class="swatch-role">Water intake tracker</div></div>
+          </div>
+          <div style="height:8px"></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px">Feature</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#2D9C7E"></div>
+            <div><div class="swatch-name">Sage — Food Scan</div><div class="swatch-hex">#2D9C7E</div><div class="swatch-role">Food scan UI elements</div></div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#7B5EA7"></div>
+            <div><div class="swatch-name">Mauve — Body Scan</div><div class="swatch-hex">#7B5EA7</div><div class="swatch-role">Body measurement UI</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+    <div class="token-card">
+      <div class="token-title">Typography</div>
+      <div class="type-list">
+        <div>
+          <div class="type-meta-label">Display — Playfair Display 900</div>
+          <div style="font-family:var(--font-display);font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--text)">FitScan</div>
+          <div class="type-meta-note">Hero titles, section headings, numbers</div>
+        </div>
+        <div>
+          <div class="type-meta-label">Heading — Playfair Display 800</div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text)">Daily Progress</div>
+          <div class="type-meta-note">Screen titles, card headers</div>
+        </div>
+        <div>
+          <div class="type-meta-label">Body — Plus Jakarta Sans 400</div>
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text2)">You're 24g short of your protein goal today.</div>
+          <div class="type-meta-note">Paragraphs, descriptions, AI text</div>
+        </div>
+        <div>
+          <div class="type-meta-label">Label — Plus Jakarta Sans 600</div>
+          <div style="font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text)">Lunch · 1:14 PM</div>
+          <div class="type-meta-note">Form labels, metadata, tags</div>
+        </div>
+        <div>
+          <div class="type-meta-label">Caption — Plus Jakarta Sans 500</div>
+          <div style="font-family:var(--font-body);font-size:11.5px;font-weight:500;color:var(--muted)">Tap to edit · 92% confidence</div>
+          <div class="type-meta-note">Hints, timestamps, confidence</div>
+        </div>
+        <div>
+          <div class="type-meta-label">Mono — System monospace</div>
+          <div style="font-family:monospace;font-size:12px;color:var(--accent)">/api/food/scan</div>
+          <div class="type-meta-note">Routes, code snippets, hex values</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPACING -->
+    <div class="token-card">
+      <div class="token-title">Spacing Scale (4px base)</div>
+      <div class="space-list">
+        <div class="space-row"><div class="space-bar" style="width:4px"></div><div class="space-val">4</div><div class="space-use">Icon gap, tight inner padding</div></div>
+        <div class="space-row"><div class="space-bar" style="width:8px"></div><div class="space-val">8</div><div class="space-use">Tag gap, chip padding</div></div>
+        <div class="space-row"><div class="space-bar" style="width:12px"></div><div class="space-use">12</div><div class="space-use">Button vertical pad</div></div>
+        <div class="space-row"><div class="space-bar" style="width:16px"></div><div class="space-val">16</div><div class="space-use">Card inner padding (sm)</div></div>
+        <div class="space-row"><div class="space-bar" style="width:20px"></div><div class="space-val">20</div><div class="space-use">Component padding (default)</div></div>
+        <div class="space-row"><div class="space-bar" style="width:24px"></div><div class="space-val">24</div><div class="space-use">Card padding, section gap</div></div>
+        <div class="space-row"><div class="space-bar" style="width:32px"></div><div class="space-val">32</div><div class="space-use">Panel padding, grid gap</div></div>
+        <div class="space-row"><div class="space-bar" style="width:48px"></div><div class="space-val">48</div><div class="space-use">Section internal gap</div></div>
+        <div class="space-row"><div class="space-bar" style="width:72px"></div><div class="space-val">72</div><div class="space-use">Page section padding</div></div>
+      </div>
+    </div>
+
+    <!-- RADIUS + SHADOW -->
+    <div class="token-card">
+      <div class="token-title">Border Radius</div>
+      <div class="radius-list">
+        <div class="radius-item"><div class="radius-box" style="border-radius:5px"></div><div class="radius-label">5px<br>Tags</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:8px"></div><div class="radius-label">8px<br>Sm btns</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:10px"></div><div class="radius-label">10px<br>Inputs</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:14px"></div><div class="radius-label">14px<br>Cards</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:22px"></div><div class="radius-label">22px<br>Panels</div></div>
+        <div class="radius-item"><div class="radius-box" style="border-radius:50%"></div><div class="radius-label">50%<br>FAB</div></div>
+      </div>
+      <div style="height:20px"></div>
+      <div class="token-title" style="margin-bottom:12px">Shadows</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="padding:11px 14px;border-radius:9px;background:var(--surface2);box-shadow:var(--shadow-sm);font-size:12px;color:var(--muted)">sm — cards default, list items</div>
+        <div style="padding:11px 14px;border-radius:9px;background:var(--surface);box-shadow:var(--shadow-md);font-size:12px;color:var(--muted)">md — card hover, tab bar, modals</div>
+        <div style="padding:11px 14px;border-radius:9px;background:var(--surface);box-shadow:var(--shadow-lg);font-size:12px;color:var(--muted)">lg — overlays, dragged items</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="full-divider">
+
+<!-- ═══ COMPONENTS ═══ -->
+<section id="components">
+  <div class="section-eyebrow">UI Components</div>
+  <h2 class="section-title">Component Library</h2>
+  <p class="section-sub">Live interactive previews of every reusable component in the design system.</p>
+
+  <div class="comp-grid fade">
+
+    <!-- BUTTONS -->
+    <div class="comp-card">
+      <div class="comp-label">Buttons</div>
+      <div class="btn-row">
+        <button class="btn btn-primary">Log Meal</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-ghost">Skip</button>
+        <button class="btn btn-danger">Delete</button>
+      </div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-primary btn-sm">Save</button>
+        <button class="btn btn-secondary btn-sm">Edit</button>
+        <button class="btn btn-icon">📷</button>
+        <button class="btn btn-icon">➕</button>
+        <button class="btn btn-icon">↩️</button>
+      </div>
+    </div>
+
+    <!-- PROGRAM SELECTOR -->
+    <div class="comp-card">
+      <div class="comp-label">Program Selector</div>
+      <div class="prog-pills">
+        <div class="prog-pill sel">
+          <div class="prog-icon">💪</div>
+          <div class="prog-name">Bulking</div>
+          <div class="prog-desc">+15% cal · build mass</div>
+        </div>
+        <div class="prog-pill">
+          <div class="prog-icon">🔥</div>
+          <div class="prog-name">Cutting</div>
+          <div class="prog-desc">−20% cal · lose fat</div>
+        </div>
+        <div class="prog-pill">
+          <div class="prog-icon">⚖️</div>
+          <div class="prog-name">Maintain</div>
+          <div class="prog-desc">= TDEE · stay steady</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCAN MODE TOGGLE -->
+    <div class="comp-card">
+      <div class="comp-label">Scan Mode Toggle</div>
+      <div class="scan-modes">
+        <div class="scan-mode active-food">
+          <div class="scan-mode-icon">🍎</div>
+          <div class="scan-mode-name">Food Scan</div>
+          <div class="scan-mode-desc">Camera, gallery or barcode</div>
+          <span class="scan-badge" style="background:rgba(45,156,126,0.1);color:var(--food-c)">GPT-4o Vision</span>
+        </div>
+        <div class="scan-mode">
+          <div class="scan-mode-icon">📏</div>
+          <div class="scan-mode-name">Body Scan</div>
+          <div class="scan-mode-desc">Photo of tape or note</div>
+          <span class="scan-badge" style="background:rgba(123,94,167,0.1);color:var(--body-c)">GPT-4o Vision</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MACRO RINGS -->
+    <div class="comp-card">
+      <div class="comp-label">Macro Ring Summary</div>
+      <div class="ring-wrap">
+        <div class="ring-rel">
+          <svg width="118" height="118" viewBox="0 0 118 118">
+            <circle cx="59" cy="59" r="48" fill="none" stroke="#EDEAE2" stroke-width="11"/>
+            <circle cx="59" cy="59" r="48" fill="none" stroke="#C0392B" stroke-width="11"
+              stroke-dasharray="301" stroke-dashoffset="150" stroke-linecap="round"
+              transform="rotate(-90 59 59)"/>
+            <circle cx="59" cy="59" r="48" fill="none" stroke="#2471A3" stroke-width="11"
+              stroke-dasharray="301" stroke-dashoffset="90" stroke-linecap="round"
+              transform="rotate(39 59 59)"/>
+            <circle cx="59" cy="59" r="48" fill="none" stroke="#D4882A" stroke-width="11"
+              stroke-dasharray="301" stroke-dashoffset="226" stroke-linecap="round"
+              transform="rotate(129 59 59)"/>
+          </svg>
+          <div class="ring-center-abs">
+            <div class="ring-num">1,842</div>
+            <div class="ring-lbl">kcal left</div>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend-row"><div class="legend-dot" style="background:var(--protein)"></div>Protein · 94 / 160g</div>
+          <div class="legend-row"><div class="legend-dot" style="background:var(--carb)"></div>Carbs · 210 / 300g</div>
+          <div class="legend-row"><div class="legend-dot" style="background:var(--fat)"></div>Fat · 48 / 80g</div>
+          <div class="legend-row" style="margin-top:6px;color:var(--accent);font-weight:600"><div class="legend-dot" style="background:var(--accent)"></div>Calories remaining</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NUTRITION RESULT CARD -->
+    <div class="comp-card">
+      <div class="comp-label">Nutrition Result Card</div>
+      <div class="nut-card">
+        <div class="nut-top">
+          <div>
+            <div class="nut-name">Grilled Chicken Breast</div>
+            <div class="nut-portion">1 portion · ~150g</div>
+          </div>
+          <div style="text-align:right">
+            <div class="nut-cal">246</div>
+            <div class="nut-cal-lbl">kcal</div>
+          </div>
+        </div>
+        <div class="macro-rows">
+          <div class="macro-row">
+            <div class="macro-lbl">Protein</div>
+            <div class="macro-track"><div class="macro-fill" style="width:75%;background:var(--protein)"></div></div>
+            <div class="macro-val">46g</div>
+          </div>
+          <div class="macro-row">
+            <div class="macro-lbl">Carbs</div>
+            <div class="macro-track"><div class="macro-fill" style="width:3%;background:var(--carb)"></div></div>
+            <div class="macro-val">0g</div>
+          </div>
+          <div class="macro-row">
+            <div class="macro-lbl">Fat</div>
+            <div class="macro-track"><div class="macro-fill" style="width:18%;background:var(--fat)"></div></div>
+            <div class="macro-val">5g</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:7px">
+        <span class="step-tag" style="background:rgba(45,156,126,0.1);color:var(--food-c)">📷 GPT-4o Vision</span>
+        <span class="step-tag" style="background:var(--accent-dim);color:var(--accent)">92% confident</span>
+      </div>
+    </div>
+
+    <!-- AI TIP CARD (inline on dashboard) -->
+    <div class="comp-card">
+      <div class="comp-label">AI Daily Tip (Dashboard Inline)</div>
+      <div style="background:linear-gradient(135deg,var(--accent-light) 0%,#FEF9F5 100%);border:1.5px solid var(--accent-mid);border-radius:var(--radius);padding:18px">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+          <span style="background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;letter-spacing:0.5px">AI TIP</span>
+          <span style="font-weight:700;font-size:13.5px;color:var(--text)">Today's nutrition plan</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:12px">
+          You're bulking — target 2,800 kcal. You're 66g short on protein. A post-workout shake + Greek yogurt snack would close the gap perfectly.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:white;border-radius:8px;border:1px solid var(--border);font-size:12.5px;cursor:pointer">
+            <span style="font-size:15px">🥗</span> Lunch suggestion: Chicken rice bowl · 580 kcal · 42g P
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:white;border-radius:8px;border:1px solid var(--border);font-size:12.5px;cursor:pointer">
+            <span style="font-size:15px">🍗</span> Dinner: Salmon + sweet potato · 640 kcal · 48g P
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BARS -->
+    <div class="comp-card">
+      <div class="comp-label">Progress Bars</div>
+      <div class="prog-list">
+        <div>
+          <div class="prog-meta"><span class="prog-name">Protein</span><span class="prog-val">94 / 160g</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:59%;background:var(--protein)"></div></div>
+        </div>
+        <div>
+          <div class="prog-meta"><span class="prog-name">Carbohydrates</span><span class="prog-val">210 / 300g</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:70%;background:var(--carb)"></div></div>
+        </div>
+        <div>
+          <div class="prog-meta"><span class="prog-name">Fat</span><span class="prog-val">48 / 80g</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:60%;background:var(--fat)"></div></div>
+        </div>
+        <div>
+          <div class="prog-meta"><span class="prog-name">Water</span><span class="prog-val">1.8 / 2.5L</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:72%;background:var(--water)"></div></div>
+        </div>
+        <div>
+          <div class="prog-meta"><span class="prog-name" style="color:var(--protein)">⚠ Sodium — over limit</span><span class="prog-val" style="color:var(--protein)">2.8 / 2.3g</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--protein)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUTS -->
+    <div class="comp-card">
+      <div class="comp-label">Form Inputs</div>
+      <div class="inp-list">
+        <div>
+          <div class="inp-label">Current Weight</div>
+          <div class="inp-wrap"><span class="inp-icon">⚖️</span><input class="inp" type="text" value="75 kg"></div>
+        </div>
+        <div>
+          <div class="inp-label">Search Food</div>
+          <div class="inp-wrap"><span class="inp-icon">🔍</span><input class="inp" type="text" placeholder="e.g. Chicken breast 100g"></div>
+        </div>
+        <div class="inp-row">
+          <div style="flex:1"><div class="inp-label">Height (cm)</div><input class="inp inp-plain" type="text" placeholder="178"></div>
+          <div style="flex:1"><div class="inp-label">Age</div><input class="inp inp-plain" type="text" placeholder="24"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING STEP INDICATOR -->
+    <div class="comp-card">
+      <div class="comp-label">Onboarding Step Indicator</div>
+      <div style="margin-bottom:20px">
+        <div class="step-indicator">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted)">Step 3 of 4 — Activity Level</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:12px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--accent-light);font-weight:600;font-size:13px;cursor:pointer">⚡ Moderately Active <span style="float:right;color:var(--accent)">✓</span></div>
+        <div style="padding:12px 16px;border-radius:10px;border:1.5px solid var(--border2);background:var(--surface2);font-size:13px;cursor:pointer;color:var(--text2)">🧘 Lightly Active</div>
+        <div style="padding:12px 16px;border-radius:10px;border:1.5px solid var(--border2);background:var(--surface2);font-size:13px;cursor:pointer;color:var(--text2)">🏃 Very Active</div>
+      </div>
+    </div>
+
+    <!-- TAB BAR + TOASTS -->
+    <div class="comp-card">
+      <div class="comp-label">Bottom Navigation & Toasts</div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px">Bottom Tab Bar</div>
+        <div class="tab-bar">
+          <div class="tab-item active"><div class="tab-icon">🏠</div>Home</div>
+          <div class="tab-item"><div class="tab-icon">📊</div>Progress</div>
+          <div class="tab-item" style="padding:0 8px">
+            <div class="tab-fab">📷</div>
+            <div style="font-size:8.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">Scan</div>
+          </div>
+          <div class="tab-item"><div class="tab-icon">👤</div>Profile</div>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px">Toast Notifications</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="toast toast-ok"><span>✅</span> Meal logged — macros updated</div>
+        <div class="toast toast-err"><span>⚠️</span> Scan failed — try manual search</div>
+        <div class="toast toast-ai"><span>🤖</span> AI tip ready for today</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="full-divider">
+
+<!-- ═══ DATA & API ═══ -->
+<section id="data">
+  <div class="section-eyebrow">Data & API</div>
+  <h2 class="section-title">Data Models & API Routes</h2>
+  <p class="section-sub">Prisma schema reference and Next.js 15 API route map. All routes authenticated via NextAuth session except /auth/*.</p>
+
+  <h3 style="font-family:var(--font-display);font-size:19px;font-weight:800;margin-bottom:18px;color:var(--text)">Prisma Models</h3>
+  <div class="model-grid fade">
+
+    <div class="model-card">
+      <div class="model-head"><span class="model-icon">👤</span><span class="model-name">User</span></div>
+      <div class="model-row"><div class="mf mpk">id</div><div class="mt">String</div><div class="mn">cuid, PK</div></div>
+      <div class="model-row"><div class="mf">email</div><div class="mt">String</div><div class="mn">unique, from Google</div></div>
+      <div class="model-row"><div class="mf">name</div><div class="mt">String?</div><div class="mn">Google display name</div></div>
+      <div class="model-row"><div class="mf">image</div><div class="mt">String?</div><div class="mn">Google avatar URL</div></div>
+      <div class="model-row"><div class="mf">onboardingDone</div><div class="mt">Boolean</div><div class="mn">default false</div></div>
+      <div class="model-row"><div class="mf">createdAt</div><div class="mt">DateTime</div><div class="mn">default now()</div></div>
+      <div class="model-row"><div class="mf">profile</div><div class="mt">UserProfile?</div><div class="mn">1:1 relation</div></div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head"><span class="model-icon">📋</span><span class="model-name">UserProfile</span></div>
+      <div class="model-row"><div class="mf mpk">id</div><div class="mt">String</div><div class="mn">cuid, PK</div></div>
+      <div class="model-row"><div class="mf">userId</div><div class="mt">String</div><div class="mn">FK → User, unique</div></div>
+      <div class="model-row"><div class="mf">age</div><div class="mt">Int</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">gender</div><div class="mt">String</div><div class="mn">male / female / other</div></div>
+      <div class="model-row"><div class="mf">weightKg</div><div class="mt">Float</div><div class="mn">current weight</div></div>
+      <div class="model-row"><div class="mf">heightCm</div><div class="mt">Float</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">program</div><div class="mt">String</div><div class="mn">BULKING / CUTTING / MAINTENANCE</div></div>
+      <div class="model-row"><div class="mf">activityLevel</div><div class="mt">String</div><div class="mn">sedentary → very_active</div></div>
+      <div class="model-row"><div class="mf">targetWeightKg</div><div class="mt">Float?</div><div class="mn">optional</div></div>
+      <div class="model-row"><div class="mf">tdee</div><div class="mt">Int</div><div class="mn">calculated on save</div></div>
+      <div class="model-row"><div class="mf">dailyCalTarget</div><div class="mt">Int</div><div class="mn">adjusted by program</div></div>
+      <div class="model-row"><div class="mf">proteinTargetG</div><div class="mt">Int</div><div class="mn">30% of cals ÷ 4</div></div>
+      <div class="model-row"><div class="mf">carbTargetG</div><div class="mt">Int</div><div class="mn">45% of cals ÷ 4</div></div>
+      <div class="model-row"><div class="mf">fatTargetG</div><div class="mt">Int</div><div class="mn">25% of cals ÷ 9</div></div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head"><span class="model-icon">🍽️</span><span class="model-name">FoodLog</span></div>
+      <div class="model-row"><div class="mf mpk">id</div><div class="mt">String</div><div class="mn">cuid, PK</div></div>
+      <div class="model-row"><div class="mf">userId</div><div class="mt">String</div><div class="mn">FK → User</div></div>
+      <div class="model-row"><div class="mf">name</div><div class="mt">String</div><div class="mn">food / dish name</div></div>
+      <div class="model-row"><div class="mf">mealType</div><div class="mt">String</div><div class="mn">BREAKFAST/LUNCH/DINNER/SNACK</div></div>
+      <div class="model-row"><div class="mf">calories</div><div class="mt">Int</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">proteinG</div><div class="mt">Float</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">carbG</div><div class="mt">Float</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">fatG</div><div class="mt">Float</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">fiberG</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">sodiumMg</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">portionMultiplier</div><div class="mt">Float</div><div class="mn">default 1.0</div></div>
+      <div class="model-row"><div class="mf">source</div><div class="mt">String</div><div class="mn">BARCODE / GPT_VISION / MANUAL</div></div>
+      <div class="model-row"><div class="mf">loggedAt</div><div class="mt">DateTime</div><div class="mn">default now()</div></div>
+    </div>
+
+    <div class="model-card">
+      <div class="model-head"><span class="model-icon">📏</span><span class="model-name">BodyMeasurement</span></div>
+      <div class="model-row"><div class="mf mpk">id</div><div class="mt">String</div><div class="mn">cuid, PK</div></div>
+      <div class="model-row"><div class="mf">userId</div><div class="mt">String</div><div class="mn">FK → User</div></div>
+      <div class="model-row"><div class="mf">weightKg</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">waistCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">chestCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">hipsCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">armsCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">thighsCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">neckCm</div><div class="mt">Float?</div><div class="mn"></div></div>
+      <div class="model-row"><div class="mf">bodyFatPct</div><div class="mt">Float?</div><div class="mn">optional</div></div>
+      <div class="model-row"><div class="mf">bmi</div><div class="mt">Float?</div><div class="mn">auto-calculated on save</div></div>
+      <div class="model-row"><div class="mf">source</div><div class="mt">String</div><div class="mn">GPT_VISION / MANUAL</div></div>
+      <div class="model-row"><div class="mf">measuredAt</div><div class="mt">DateTime</div><div class="mn">default now()</div></div>
+    </div>
+
+  </div>
+
+  <h3 style="font-family:var(--font-display);font-size:19px;font-weight:800;margin-bottom:18px;color:var(--text)">API Route Map</h3>
+  <div class="api-list fade">
+
+    <div class="api-group-label">Authentication (NextAuth)</div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/auth/[...nextauth]</span><span class="api-desc">Session check, Google OAuth callback</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/auth/[...nextauth]</span><span class="api-desc">Sign in / sign out</span></div>
+
+    <div class="api-group-label">Onboarding & Profile</div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/profile</span><span class="api-desc">Get current user profile + daily targets</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/profile</span><span class="api-desc">Create profile, calc TDEE + macros, set onboardingDone</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method PATCH">PATCH</span><span class="api-path">/api/profile</span><span class="api-desc">Update weight / program / activity, recalculate targets</span><span class="auth-badge">auth</span></div>
+
+    <div class="api-group-label">Food Scan & Logging</div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/food/scan</span><span class="api-desc">Image → GPT-4o Vision → JSON nutrition result</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/food/barcode</span><span class="api-desc">Barcode string → Open Food Facts → nutrition (GPT-4o fallback)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/food/search</span><span class="api-desc">Text search nutritional database (?q=)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/food/log</span><span class="api-desc">Get food logs (?date=YYYY-MM-DD)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/food/log</span><span class="api-desc">Create FoodLog from confirmed nutrition result</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method PATCH">PATCH</span><span class="api-path">/api/food/log/[id]</span><span class="api-desc">Edit portion or meal type of a logged entry</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method DELETE">DEL</span><span class="api-path">/api/food/log/[id]</span><span class="api-desc">Delete a food log entry</span><span class="auth-badge">auth</span></div>
+
+    <div class="api-group-label">Body Measurement Scan</div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/body/scan</span><span class="api-desc">Image → GPT-4o Vision → extracted measurement JSON</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/body/log</span><span class="api-desc">Get measurement history (?limit=30)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/body/log</span><span class="api-desc">Save confirmed body measurements, auto-calc BMI</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method DELETE">DEL</span><span class="api-path">/api/body/log/[id]</span><span class="api-desc">Delete a measurement record</span><span class="auth-badge">auth</span></div>
+
+    <div class="api-group-label">AI Features (GPT-4o)</div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/ai/daily-tip</span><span class="api-desc">Generate daily tip + meal suggestions (cached once/day per user)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method POST">POST</span><span class="api-path">/api/ai/weekly-report</span><span class="api-desc">Generate 7-day insight report (cached once/week)</span><span class="auth-badge">auth</span></div>
+
+    <div class="api-group-label">Dashboard & Progress</div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/dashboard/today</span><span class="api-desc">Today's calorie, macro, water totals + streak count</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/progress/nutrition</span><span class="api-desc">Macro adherence data for charts (?days=30)</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/progress/body</span><span class="api-desc">All body measurement history for chart rendering</span><span class="auth-badge">auth</span></div>
+    <div class="api-row"><span class="method GET">GET</span><span class="api-path">/api/export/csv</span><span class="api-desc">Download all user data as CSV</span><span class="auth-badge">auth</span></div>
+
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <span>FitScan · App Flow & Design Reference · v1.1</span>
+  <span>Next.js 15 · PostgreSQL · Prisma · OpenAI GPT-4o · NextAuth.js v5</span>
+</footer>
+
+<script>
+// Scroll-based fade
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.04 });
+document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+
+// Nav active
+const secs = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-link[href^="#"]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  secs.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + cur));
+});
+
+// Program pill
+document.querySelectorAll('.prog-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.prog-pill').forEach(x => x.classList.remove('sel'));
+    p.classList.add('sel');
+  });
+});
+
+// Scan mode toggle
+document.querySelectorAll('.scan-mode').forEach(m => {
+  m.addEventListener('click', () => {
+    document.querySelectorAll('.scan-mode').forEach(x => {
+      x.classList.remove('active-food', 'active-body');
+    });
+    m.classList.add(m.querySelector('.scan-mode-name').textContent.includes('Food') ? 'active-food' : 'active-body');
+  });
+});
+</script>
+</body>
+</html>
