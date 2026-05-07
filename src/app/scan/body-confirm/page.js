@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ArrowLeft, Weight, Ruler, Activity, Check, Camera } from "lucide-react";
 
 const initialFields = [
-  { key: "weightKg", label: "Weight", unit: "kg", value: "74.8", prev: "75.2", icon: "⚖️" },
-  { key: "waistCm", label: "Waist", unit: "cm", value: "82", prev: "83.5", icon: "📏" },
-  { key: "chestCm", label: "Chest", unit: "cm", value: "98", prev: "97", icon: "📐" },
-  { key: "hipsCm", label: "Hips", unit: "cm", value: "", prev: "96", icon: "📐" },
-  { key: "armsCm", label: "Arms", unit: "cm", value: "34.5", prev: "34", icon: "💪" },
-  { key: "thighsCm", label: "Thighs", unit: "cm", value: "", prev: "56", icon: "🦵" },
-  { key: "neckCm", label: "Neck", unit: "cm", value: "38", prev: "38.2", icon: "📏" },
-  { key: "bodyFatPct", label: "Body Fat", unit: "%", value: "", prev: "18.2", icon: "📊" },
+  { key: "weightKg", label: "Weight", unit: "kg", value: "74.8", prev: "75.2", icon: Weight },
+  { key: "waistCm", label: "Waist", unit: "cm", value: "82", prev: "83.5", icon: Ruler },
+  { key: "chestCm", label: "Chest", unit: "cm", value: "98", prev: "97", icon: Ruler },
+  { key: "hipsCm", label: "Hips", unit: "cm", value: "", prev: "96", icon: Ruler },
+  { key: "armsCm", label: "Arms", unit: "cm", value: "34.5", prev: "34", icon: Activity },
+  { key: "thighsCm", label: "Thighs", unit: "cm", value: "", prev: "56", icon: Activity },
+  { key: "neckCm", label: "Neck", unit: "cm", value: "38", prev: "38.2", icon: Ruler },
+  { key: "bodyFatPct", label: "Body Fat", unit: "%", value: "", prev: "18.2", icon: Activity },
 ];
 
 export default function BodyConfirmPage() {
@@ -28,16 +29,16 @@ export default function BodyConfirmPage() {
     : "—";
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-[#F5F5F5]">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4 flex items-center gap-3">
+      <div className="px-5 pt-12 pb-4 flex items-center gap-3">
         <Link
           href="/scan"
-          className="w-9 h-9 rounded-lg bg-surface border border-border2 flex items-center justify-center text-sm"
+          className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm"
         >
-          ←
+          <ArrowLeft size={18} className="text-text" />
         </Link>
-        <h1 className="font-display text-lg font-black text-text">
+        <h1 className="font-bold text-lg text-text">
           Body Measurements
         </h1>
       </div>
@@ -45,19 +46,19 @@ export default function BodyConfirmPage() {
       <div className="px-5 flex flex-col gap-4 pb-8">
         {/* Source badge */}
         <div className="flex gap-2">
-          <span className="text-[10px] font-bold px-2.5 py-1 rounded bg-[rgba(123,94,167,0.1)] text-body">
-            📷 GPT-4o Vision
+          <span className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(123,94,167,0.1)] text-[#7B5EA7]">
+            <Camera size={12} /> GPT-4o Vision
           </span>
-          <span className="text-[10px] font-bold px-2.5 py-1 rounded bg-accent-dim text-accent">
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(123,94,167,0.06)] text-[#7B5EA7]">
             Review & edit values
           </span>
         </div>
 
         {/* BMI Card */}
-        <div className="bg-surface border border-border rounded-[14px] p-4 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between">
           <div>
             <span className="text-xs text-muted">BMI (auto-calculated)</span>
-            <div className="font-display text-2xl font-black text-accent">
+            <div className="font-bold text-2xl text-[#2D9C7E] mt-0.5">
               {bmi}
             </div>
           </div>
@@ -69,7 +70,7 @@ export default function BodyConfirmPage() {
         </div>
 
         {/* Measurement Fields */}
-        <div className="bg-surface border border-border rounded-[14px] p-5 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
           <div className="flex flex-col gap-4">
             {fields.map((field, i) => {
               const delta = field.value && field.prev
@@ -77,10 +78,13 @@ export default function BodyConfirmPage() {
                 : null;
               const isNeg = delta && parseFloat(delta) < 0;
               const isPos = delta && parseFloat(delta) > 0;
+              const Icon = field.icon;
 
               return (
                 <div key={field.key} className="flex items-center gap-3">
-                  <span className="text-lg w-7 text-center">{field.icon}</span>
+                  <div className="w-8 h-8 rounded-lg bg-[#F0EBF5] flex items-center justify-center">
+                    <Icon size={16} className="text-[#7B5EA7]" />
+                  </div>
                   <div className="flex-1">
                     <label className="text-[10px] font-semibold text-muted block mb-1">
                       {field.label} ({field.unit})
@@ -90,15 +94,14 @@ export default function BodyConfirmPage() {
                       placeholder="—"
                       value={field.value}
                       onChange={(e) => updateField(i, e.target.value)}
-                      className="w-full bg-bg2 border border-border2 rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent focus:bg-surface transition-colors"
+                      className="w-full bg-[#F8F8F8] border border-border2 rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#7B5EA7] focus:bg-white transition-colors"
                     />
                   </div>
-                  {/* Delta indicator */}
                   <div className="w-14 text-right">
                     {delta ? (
                       <span
                         className={`text-[11px] font-semibold ${
-                          isNeg ? "text-fiber" : isPos ? "text-protein" : "text-muted"
+                          isNeg ? "text-[#2D9C7E]" : isPos ? "text-[#C0392B]" : "text-muted"
                         }`}
                       >
                         {isPos ? "+" : ""}
@@ -117,9 +120,9 @@ export default function BodyConfirmPage() {
         {/* Save Button */}
         <Link
           href="/progress"
-          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-accent text-white font-semibold text-sm shadow-[0_2px_8px_rgba(217,95,43,0.28)] hover:bg-[#C4501E] transition-colors"
+          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
         >
-          ✓ Save Measurements
+          <Check size={18} /> Save Measurements
         </Link>
       </div>
     </div>

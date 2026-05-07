@@ -1,4 +1,5 @@
 import BottomNav from "@/components/bottom-nav";
+import { Calendar } from "lucide-react";
 
 export const metadata = { title: "Progress | FitScan" };
 
@@ -16,7 +17,6 @@ function WeightChart() {
         <span className="text-[11px] text-muted">Last 7 days</span>
       </div>
       <div className="relative h-36">
-        {/* Y-axis labels */}
         <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[9px] text-muted2 w-6">
           <span>76</span>
           <span>74</span>
@@ -24,9 +24,7 @@ function WeightChart() {
           <span>70</span>
         </div>
 
-        {/* Chart area */}
         <div className="ml-7 relative h-full">
-          {/* Grid lines */}
           <div className="absolute inset-0 flex flex-col justify-between">
             <div className="border-t border-gray-100" />
             <div className="border-t border-gray-100" />
@@ -34,7 +32,6 @@ function WeightChart() {
             <div className="border-t border-gray-100" />
           </div>
 
-          {/* Goal line */}
           <div
             className="absolute left-0 right-0 border-t-[1.5px] border-dashed border-[#C0392B]/50"
             style={{ bottom: `${((goal - min) / range) * 100}%` }}
@@ -44,7 +41,6 @@ function WeightChart() {
             </span>
           </div>
 
-          {/* Line chart */}
           <svg className="w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="none">
             <polyline
               fill="none"
@@ -156,8 +152,8 @@ export default function ProgressPage() {
             <h1 className="font-bold text-xl text-text">Progress</h1>
             <p className="text-xs text-muted mt-0.5">Track your transformation</p>
           </div>
-          <button className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">
-            📅
+          <button className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">
+            <Calendar size={18} className="text-muted" />
           </button>
         </div>
       </div>

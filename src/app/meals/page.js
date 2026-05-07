@@ -1,4 +1,5 @@
 import BottomNav from "@/components/bottom-nav";
+import { Calendar, Sparkles, Droplets, ChevronRight, UtensilsCrossed } from "lucide-react";
 
 export const metadata = { title: "Daily Plan | FitScan" };
 
@@ -62,14 +63,14 @@ function TodaysNutrition() {
 
 function AiRecommendation() {
   const suggestions = [
-    { icon: "🥗", text: "Lunch suggestion: Chicken rice bowl · 580 kcal · 42g P" },
-    { icon: "🍗", text: "Dinner suggestion: Salmon + sweet potato · 640 kcal · 48g P" },
+    { text: "Lunch suggestion: Chicken rice bowl · 580 kcal · 42g P", color: "bg-[#E8F5E9]", iconColor: "text-[#388E3C]" },
+    { text: "Dinner suggestion: Salmon + sweet potato · 640 kcal · 48g P", color: "bg-[#FFF3E0]", iconColor: "text-[#F57C00]" },
   ];
 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">✨</span>
+        <Sparkles size={18} className="text-[#2D9C7E]" />
         <h3 className="font-semibold text-sm text-text">AI Recommendation</h3>
       </div>
       <div className="flex flex-col gap-2.5">
@@ -78,11 +79,11 @@ function AiRecommendation() {
             key={i}
             className="flex items-center gap-3 p-3 bg-[#F8F8F8] rounded-xl hover:bg-[#F0F0F0] transition-colors cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
-              {s.icon}
+            <div className={`w-9 h-9 rounded-lg ${s.color} flex items-center justify-center shadow-sm`}>
+              <UtensilsCrossed size={16} className={s.iconColor} />
             </div>
             <span className="text-xs text-text2 flex-1">{s.text}</span>
-            <span className="text-muted2 text-sm">›</span>
+            <ChevronRight size={16} className="text-muted2" />
           </div>
         ))}
       </div>
@@ -95,7 +96,7 @@ function WaterCard() {
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-lg">💧</span>
+          <Droplets size={18} className="text-water" />
           <h3 className="font-semibold text-sm text-text">Water</h3>
         </div>
         <span className="text-xs text-water font-semibold">1.8 / 2.5L</span>
@@ -109,9 +110,9 @@ function WaterCard() {
 
 function MealsList() {
   const meals = [
-    { icon: "🥣", type: "Breakfast", time: "8:14 AM", name: "Oatmeal + Banana", cal: 320, protein: 12 },
-    { icon: "🍗", type: "Lunch", time: "1:02 PM", name: "Chicken Rice Bowl", cal: 580, protein: 42 },
-    { icon: "🥛", type: "Snack", time: "4:30 PM", name: "Greek Yogurt", cal: 200, protein: 18 },
+    { type: "Breakfast", time: "8:14 AM", name: "Oatmeal + Banana", cal: 320, protein: 12, color: "bg-[#FFF3E0]", iconColor: "text-[#F57C00]" },
+    { type: "Lunch", time: "1:02 PM", name: "Chicken Rice Bowl", cal: 580, protein: 42, color: "bg-[#E8F5E9]", iconColor: "text-[#388E3C]" },
+    { type: "Snack", time: "4:30 PM", name: "Greek Yogurt", cal: 200, protein: 18, color: "bg-[#E3F2FD]", iconColor: "text-[#1976D2]" },
   ];
 
   return (
@@ -120,8 +121,8 @@ function MealsList() {
       <div className="flex flex-col gap-3">
         {meals.map((meal) => (
           <div key={meal.type} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F5F5F5] flex items-center justify-center text-lg">
-              {meal.icon}
+            <div className={`w-10 h-10 rounded-xl ${meal.color} flex items-center justify-center`}>
+              <UtensilsCrossed size={18} className={meal.iconColor} />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
@@ -135,7 +136,7 @@ function MealsList() {
                 </span>
               </div>
             </div>
-            <span className="text-muted2 text-sm ml-1">›</span>
+            <ChevronRight size={16} className="text-muted2 ml-1" />
           </div>
         ))}
       </div>
@@ -149,8 +150,8 @@ export default function MealsPage() {
       <div className="px-5 pt-12 pb-4">
         <div className="flex items-center justify-between">
           <h1 className="font-bold text-xl text-text">Daily Plan</h1>
-          <button className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">
-            📅
+          <button className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm">
+            <Calendar size={18} className="text-muted" />
           </button>
         </div>
       </div>

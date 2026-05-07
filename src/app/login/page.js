@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ScanLine } from "lucide-react";
 
 export const metadata = {
   title: "Login | FitScan",
@@ -6,7 +7,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F5] px-6">
       <div className="w-full max-w-sm flex flex-col items-center">
         {/* Logo */}
         <h1 className="font-display text-4xl font-black text-accent tracking-tight mb-3">
@@ -18,15 +19,15 @@ export default function LoginPage() {
           Transform your body with AI.
         </p>
 
-        {/* Hero illustration placeholder */}
-        <div className="w-48 h-48 rounded-full bg-accent-light flex items-center justify-center mb-12">
-          <span className="text-6xl">🍎</span>
+        {/* Hero illustration */}
+        <div className="w-48 h-48 rounded-full bg-[#E8F5F0] flex items-center justify-center mb-12">
+          <ScanLine size={64} className="text-[#2D9C7E]" />
         </div>
 
         {/* Google OAuth button */}
         <Link
           href="/onboarding/profile"
-          className="w-full flex items-center justify-center gap-3 h-13 rounded-xl bg-surface border border-border2 shadow-sm text-text font-semibold text-sm hover:border-accent-mid hover:shadow-md transition-all"
+          className="w-full flex items-center justify-center gap-3 h-13 rounded-xl bg-white border border-border2 shadow-sm text-text font-semibold text-sm hover:border-[#2D9C7E]/30 hover:shadow-md transition-all"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path

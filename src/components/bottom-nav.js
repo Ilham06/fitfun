@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, TrendingUp, Camera, UtensilsCrossed, User } from "lucide-react";
 
 const tabs = [
-  { href: "/dashboard", icon: "🏠", label: "Home" },
-  { href: "/progress", icon: "📊", label: "Progress" },
-  { href: "/scan", icon: "📷", label: "Scan", isFab: true },
-  { href: "/meals", icon: "🍽️", label: "Meals" },
-  { href: "/profile", icon: "👤", label: "Profile" },
+  { href: "/dashboard", icon: Home, label: "Home" },
+  { href: "/progress", icon: TrendingUp, label: "Progress" },
+  { href: "/scan", icon: Camera, label: "Scan", isFab: true },
+  { href: "/meals", icon: UtensilsCrossed, label: "Meals" },
+  { href: "/profile", icon: User, label: "Profile" },
 ];
 
 export default function BottomNav() {
@@ -20,6 +21,7 @@ export default function BottomNav() {
         {tabs.map((tab) => {
           const isActive =
             pathname === tab.href || pathname.startsWith(tab.href + "/");
+          const Icon = tab.icon;
 
           if (tab.isFab) {
             return (
@@ -28,8 +30,8 @@ export default function BottomNav() {
                 href={tab.href}
                 className="flex flex-col items-center -mt-5"
               >
-                <div className="w-14 h-14 rounded-full bg-[#2D9C7E] flex items-center justify-center text-xl shadow-[0_4px_14px_rgba(45,156,126,0.4)]">
-                  <span className="text-white text-2xl">📷</span>
+                <div className="w-14 h-14 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_14px_rgba(45,156,126,0.4)]">
+                  <Icon size={24} className="text-white" />
                 </div>
                 <span
                   className={`text-[10px] font-semibold mt-1 ${
@@ -48,7 +50,10 @@ export default function BottomNav() {
               href={tab.href}
               className="flex flex-col items-center gap-0.5 py-1"
             >
-              <span className="text-xl">{tab.icon}</span>
+              <Icon
+                size={22}
+                className={isActive ? "text-[#2D9C7E]" : "text-muted"}
+              />
               <span
                 className={`text-[10px] font-semibold ${
                   isActive ? "text-[#2D9C7E]" : "text-muted"

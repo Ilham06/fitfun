@@ -1,4 +1,5 @@
 import BottomNav from "@/components/bottom-nav";
+import { Flame, Sparkles, Target, Zap, Weight, Ruler, ChevronRight, UtensilsCrossed } from "lucide-react";
 
 export const metadata = { title: "Dashboard | FitScan" };
 
@@ -7,7 +8,6 @@ function MacroRing() {
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <h3 className="font-semibold text-sm text-text mb-4">Today&apos;s Summary</h3>
       <div className="flex items-center gap-5">
-        {/* SVG Ring */}
         <div className="relative flex-shrink-0">
           <svg width="120" height="120" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="48" fill="none" stroke="#F0F0F0" strokeWidth="12" />
@@ -33,7 +33,6 @@ function MacroRing() {
           </div>
         </div>
 
-        {/* Legend */}
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center gap-2.5 text-xs">
             <span className="w-2.5 h-2.5 rounded-full bg-protein" />
@@ -64,7 +63,7 @@ function AiTipCard() {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">✨</span>
+        <Sparkles size={18} className="text-[#2D9C7E]" />
         <span className="font-semibold text-sm text-text">AI Tip</span>
       </div>
       <p className="text-[13px] text-text2 leading-relaxed">
@@ -77,32 +76,37 @@ function AiTipCard() {
 
 function StatsCards() {
   const stats = [
-    { icon: "🎯", label: "Program", value: "Bulking" },
-    { icon: "⚡", label: "Activity", value: "Moderate" },
-    { icon: "⚖️", label: "Weight", value: "74.8 kg" },
-    { icon: "📏", label: "Height", value: "178 cm" },
+    { icon: Target, label: "Program", value: "Bulking" },
+    { icon: Zap, label: "Activity", value: "Moderate" },
+    { icon: Weight, label: "Weight", value: "74.8 kg" },
+    { icon: Ruler, label: "Height", value: "178 cm" },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {stats.map((s) => (
-        <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
-          <span className="text-xl">{s.icon}</span>
-          <div>
-            <div className="text-[10px] text-muted">{s.label}</div>
-            <div className="font-semibold text-sm text-text">{s.value}</div>
+      {stats.map((s) => {
+        const Icon = s.icon;
+        return (
+          <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#F5F5F5] flex items-center justify-center">
+              <Icon size={18} className="text-[#2D9C7E]" />
+            </div>
+            <div>
+              <div className="text-[10px] text-muted">{s.label}</div>
+              <div className="font-semibold text-sm text-text">{s.value}</div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 function TodaysMeals() {
   const meals = [
-    { icon: "🥣", type: "Breakfast", time: "8:14 AM", name: "Oatmeal + Banana", cal: 320, protein: 12 },
-    { icon: "🍗", type: "Lunch", time: "1:02 PM", name: "Chicken Rice Bowl", cal: 580, protein: 42 },
-    { icon: "🥛", type: "Snack", time: "4:30 PM", name: "Greek Yogurt", cal: 200, protein: 18 },
+    { type: "Breakfast", time: "8:14 AM", name: "Oatmeal + Banana", cal: 320, protein: 12, color: "bg-[#FFF3E0]", iconColor: "text-[#F57C00]" },
+    { type: "Lunch", time: "1:02 PM", name: "Chicken Rice Bowl", cal: 580, protein: 42, color: "bg-[#E8F5E9]", iconColor: "text-[#388E3C]" },
+    { type: "Snack", time: "4:30 PM", name: "Greek Yogurt", cal: 200, protein: 18, color: "bg-[#E3F2FD]", iconColor: "text-[#1976D2]" },
   ];
 
   return (
@@ -111,8 +115,8 @@ function TodaysMeals() {
       <div className="flex flex-col gap-3">
         {meals.map((meal) => (
           <div key={meal.type} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F5F3EE] flex items-center justify-center text-lg">
-              {meal.icon}
+            <div className={`w-10 h-10 rounded-xl ${meal.color} flex items-center justify-center`}>
+              <UtensilsCrossed size={18} className={meal.iconColor} />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
@@ -126,7 +130,7 @@ function TodaysMeals() {
                 </span>
               </div>
             </div>
-            <span className="text-muted2 text-sm ml-1">›</span>
+            <ChevronRight size={16} className="text-muted2 ml-1" />
           </div>
         ))}
       </div>
@@ -137,15 +141,14 @@ function TodaysMeals() {
 export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-24">
-      {/* Header */}
       <div className="px-5 pt-12 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted">Good afternoon,</p>
-            <h1 className="font-bold text-2xl text-text">John 👋</h1>
+            <h1 className="font-bold text-2xl text-text">John</h1>
           </div>
           <div className="bg-white rounded-xl px-3 py-2 shadow-sm flex items-center gap-2">
-            <span className="text-lg">🔥</span>
+            <Flame size={18} className="text-accent" />
             <div>
               <div className="font-bold text-sm text-accent leading-none">12</div>
               <div className="text-[9px] text-muted">Day streak</div>
@@ -154,7 +157,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="px-5 flex flex-col gap-4">
         <MacroRing />
         <AiTipCard />

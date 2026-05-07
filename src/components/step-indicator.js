@@ -21,10 +21,10 @@ export default function StepIndicator() {
             key={step.path}
             className={`h-[5px] rounded-full transition-all ${
               i < currentIndex
-                ? "bg-accent w-7"
+                ? "bg-[#2D9C7E] w-7"
                 : i === currentIndex
-                  ? "bg-accent w-11"
-                  : "bg-bg2 w-7"
+                  ? "bg-[#2D9C7E] w-11"
+                  : "bg-[#E0E0E0] w-7"
             }`}
           />
         ))}

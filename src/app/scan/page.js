@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import BottomNav from "@/components/bottom-nav";
+import { ArrowLeft, Camera, Image, Zap, Apple, Ruler } from "lucide-react";
 
 export default function ScanPage() {
   const [mode, setMode] = useState("food");
@@ -14,9 +15,9 @@ export default function ScanPage() {
         <div className="flex items-center gap-3 mb-1">
           <Link
             href="/dashboard"
-            className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm"
+            className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm"
           >
-            ←
+            <ArrowLeft size={18} className="text-text" />
           </Link>
           <h1 className="font-bold text-xl text-text">Scan</h1>
         </div>
@@ -35,7 +36,7 @@ export default function ScanPage() {
             }`}
           >
             <div className="w-12 h-12 rounded-full bg-[#E8F5F0] flex items-center justify-center mb-3">
-              <span className="text-2xl">🍎</span>
+              <Apple size={24} className="text-[#2D9C7E]" />
             </div>
             <span className="font-bold text-sm text-text">Food Scan</span>
             <span className="text-[11px] text-muted mt-1 text-center">
@@ -54,7 +55,7 @@ export default function ScanPage() {
             }`}
           >
             <div className="w-12 h-12 rounded-full bg-[#F0EBF5] flex items-center justify-center mb-3">
-              <span className="text-2xl">📏</span>
+              <Ruler size={24} className="text-[#7B5EA7]" />
             </div>
             <span className="font-bold text-sm text-text">Body Scan</span>
             <span className="text-[11px] text-muted mt-1 text-center">
@@ -70,22 +71,19 @@ export default function ScanPage() {
       {/* Camera Viewfinder */}
       <div className="px-5 flex-1">
         <div className="relative w-full aspect-[3/4] bg-[#1E2A2A] rounded-3xl overflow-hidden flex flex-col items-center justify-center">
-          {/* Corner brackets */}
           <div className="absolute top-8 left-8 w-8 h-8 border-t-[3px] border-l-[3px] border-white/50 rounded-tl-xl" />
           <div className="absolute top-8 right-8 w-8 h-8 border-t-[3px] border-r-[3px] border-white/50 rounded-tr-xl" />
           <div className="absolute bottom-16 left-8 w-8 h-8 border-b-[3px] border-l-[3px] border-white/50 rounded-bl-xl" />
           <div className="absolute bottom-16 right-8 w-8 h-8 border-b-[3px] border-r-[3px] border-white/50 rounded-br-xl" />
 
-          {/* Center icon */}
           <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-4">
             {mode === "food" ? (
-              <span className="text-4xl opacity-60">🍽️</span>
+              <Apple size={36} className="text-white/50" />
             ) : (
-              <span className="text-4xl opacity-60">📐</span>
+              <Ruler size={36} className="text-white/50" />
             )}
           </div>
 
-          {/* Hint text */}
           <p className="text-white/60 text-sm text-center px-8">
             {mode === "food"
               ? "Point camera at food or barcode"
@@ -96,17 +94,17 @@ export default function ScanPage() {
 
       {/* Capture Button */}
       <div className="py-5 flex items-center justify-center gap-6">
-        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg">
-          🖼️
+        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+          <Image size={20} className="text-muted" />
         </button>
         <Link
           href={mode === "food" ? "/scan/result" : "/scan/body-confirm"}
-          className="w-16 h-16 rounded-full bg-[#2D9C7E] flex items-center justify-center text-2xl shadow-[0_4px_14px_rgba(45,156,126,0.4)] hover:bg-[#258C6E] transition-colors"
+          className="w-16 h-16 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_14px_rgba(45,156,126,0.4)] hover:bg-[#258C6E] transition-colors"
         >
-          <span className="text-white">📷</span>
+          <Camera size={26} className="text-white" />
         </Link>
-        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg">
-          ⚡
+        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+          <Zap size={20} className="text-muted" />
         </button>
       </div>
 
