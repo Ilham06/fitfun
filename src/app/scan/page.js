@@ -5,97 +5,108 @@ import { useState } from "react";
 import BottomNav from "@/components/bottom-nav";
 
 export default function ScanPage() {
-  const [mode, setMode] = useState("food"); // "food" | "body"
+  const [mode, setMode] = useState("food");
 
   return (
-    <div className="min-h-screen bg-bg pb-28 flex flex-col">
+    <div className="min-h-screen bg-[#F5F5F5] pb-24 flex flex-col">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4">
-        <h1 className="font-display text-xl font-black text-text">Scan</h1>
-        <p className="text-xs text-muted mt-1">
-          Take a photo or select from gallery
-        </p>
+      <div className="px-5 pt-12 pb-2">
+        <div className="flex items-center gap-3 mb-1">
+          <Link
+            href="/dashboard"
+            className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm"
+          >
+            ←
+          </Link>
+          <h1 className="font-bold text-xl text-text">Scan</h1>
+        </div>
+        <p className="text-xs text-muted ml-12">What would you like to scan?</p>
       </div>
 
-      {/* Mode Toggle */}
-      <div className="px-5 mb-5">
+      {/* Mode Toggle Cards */}
+      <div className="px-5 py-4">
         <div className="flex gap-3">
           <button
             onClick={() => setMode("food")}
-            className={`flex-1 flex flex-col items-center p-5 rounded-[14px] border-2 transition-all ${
+            className={`flex-1 flex flex-col items-center p-5 rounded-2xl border-2 transition-all bg-white ${
               mode === "food"
-                ? "border-food bg-[rgba(45,156,126,0.06)]"
-                : "border-border bg-surface2 hover:border-food/30"
+                ? "border-[#2D9C7E] shadow-md"
+                : "border-transparent shadow-sm hover:border-[#2D9C7E]/30"
             }`}
           >
-            <span className="text-3xl mb-2">🍎</span>
-            <span className="font-bold text-sm">Food Scan</span>
-            <span className="text-[11px] text-muted mt-1">
+            <div className="w-12 h-12 rounded-full bg-[#E8F5F0] flex items-center justify-center mb-3">
+              <span className="text-2xl">🍎</span>
+            </div>
+            <span className="font-bold text-sm text-text">Food Scan</span>
+            <span className="text-[11px] text-muted mt-1 text-center">
               Camera, gallery or barcode
             </span>
-            <span className="mt-2 text-[10px] font-bold px-2 py-0.5 rounded bg-[rgba(45,156,126,0.1)] text-food">
+            <span className="mt-3 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(45,156,126,0.1)] text-[#2D9C7E]">
               GPT-4o Vision
             </span>
           </button>
           <button
             onClick={() => setMode("body")}
-            className={`flex-1 flex flex-col items-center p-5 rounded-[14px] border-2 transition-all ${
+            className={`flex-1 flex flex-col items-center p-5 rounded-2xl border-2 transition-all bg-white ${
               mode === "body"
-                ? "border-body bg-[rgba(123,94,167,0.06)]"
-                : "border-border bg-surface2 hover:border-body/30"
+                ? "border-[#7B5EA7] shadow-md"
+                : "border-transparent shadow-sm hover:border-[#7B5EA7]/30"
             }`}
           >
-            <span className="text-3xl mb-2">📏</span>
-            <span className="font-bold text-sm">Body Scan</span>
-            <span className="text-[11px] text-muted mt-1">
+            <div className="w-12 h-12 rounded-full bg-[#F0EBF5] flex items-center justify-center mb-3">
+              <span className="text-2xl">📏</span>
+            </div>
+            <span className="font-bold text-sm text-text">Body Scan</span>
+            <span className="text-[11px] text-muted mt-1 text-center">
               Photo of tape or note
             </span>
-            <span className="mt-2 text-[10px] font-bold px-2 py-0.5 rounded bg-[rgba(123,94,167,0.1)] text-body">
+            <span className="mt-3 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(123,94,167,0.1)] text-[#7B5EA7]">
               GPT-4o Vision
             </span>
           </button>
         </div>
       </div>
 
-      {/* Camera Viewfinder (mock) */}
+      {/* Camera Viewfinder */}
       <div className="px-5 flex-1">
-        <div className="relative w-full aspect-[3/4] bg-[#1a1a1a] rounded-[22px] overflow-hidden flex items-center justify-center">
-          {/* Viewfinder overlay */}
-          <div className="absolute inset-6 border-2 border-white/20 rounded-xl" />
-          <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-white/60 rounded-tl-lg" />
-          <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-white/60 rounded-tr-lg" />
-          <div className="absolute bottom-8 left-8 w-6 h-6 border-b-2 border-l-2 border-white/60 rounded-bl-lg" />
-          <div className="absolute bottom-8 right-8 w-6 h-6 border-b-2 border-r-2 border-white/60 rounded-br-lg" />
+        <div className="relative w-full aspect-[3/4] bg-[#1E2A2A] rounded-3xl overflow-hidden flex flex-col items-center justify-center">
+          {/* Corner brackets */}
+          <div className="absolute top-8 left-8 w-8 h-8 border-t-[3px] border-l-[3px] border-white/50 rounded-tl-xl" />
+          <div className="absolute top-8 right-8 w-8 h-8 border-t-[3px] border-r-[3px] border-white/50 rounded-tr-xl" />
+          <div className="absolute bottom-16 left-8 w-8 h-8 border-b-[3px] border-l-[3px] border-white/50 rounded-bl-xl" />
+          <div className="absolute bottom-16 right-8 w-8 h-8 border-b-[3px] border-r-[3px] border-white/50 rounded-br-xl" />
 
           {/* Center icon */}
-          <div className="text-white/40 text-5xl">
-            {mode === "food" ? "🍽️" : "📐"}
+          <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-4">
+            {mode === "food" ? (
+              <span className="text-4xl opacity-60">🍽️</span>
+            ) : (
+              <span className="text-4xl opacity-60">📐</span>
+            )}
           </div>
 
           {/* Hint text */}
-          <div className="absolute bottom-12 left-0 right-0 text-center">
-            <p className="text-white/60 text-xs">
-              {mode === "food"
-                ? "Point camera at food or barcode"
-                : "Point camera at tape measure or note"}
-            </p>
-          </div>
+          <p className="text-white/60 text-sm text-center px-8">
+            {mode === "food"
+              ? "Point camera at food or barcode"
+              : "Point camera at tape measure or note"}
+          </p>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="px-5 py-5 flex items-center justify-center gap-6">
-        <button className="w-12 h-12 rounded-xl bg-surface border border-border2 flex items-center justify-center text-lg shadow-sm">
+      {/* Capture Button */}
+      <div className="py-5 flex items-center justify-center gap-6">
+        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg">
           🖼️
         </button>
         <Link
           href={mode === "food" ? "/scan/result" : "/scan/body-confirm"}
-          className="w-16 h-16 rounded-full bg-accent flex items-center justify-center text-2xl shadow-[0_4px_14px_rgba(217,95,43,0.35)] hover:bg-[#C4501E] transition-colors"
+          className="w-16 h-16 rounded-full bg-[#2D9C7E] flex items-center justify-center text-2xl shadow-[0_4px_14px_rgba(45,156,126,0.4)] hover:bg-[#258C6E] transition-colors"
         >
-          📷
+          <span className="text-white">📷</span>
         </Link>
-        <button className="w-12 h-12 rounded-xl bg-surface border border-border2 flex items-center justify-center text-lg shadow-sm">
-          🔍
+        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg">
+          ⚡
         </button>
       </div>
 

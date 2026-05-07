@@ -4,51 +4,55 @@ export const metadata = { title: "Dashboard | FitScan" };
 
 function MacroRing() {
   return (
-    <div className="bg-surface border border-border rounded-[14px] p-5 shadow-sm">
+    <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <h3 className="font-semibold text-sm text-text mb-4">Today&apos;s Summary</h3>
       <div className="flex items-center gap-5">
         {/* SVG Ring */}
         <div className="relative flex-shrink-0">
-          <svg width="110" height="110" viewBox="0 0 118 118">
-            <circle cx="59" cy="59" r="48" fill="none" stroke="#EDEAE2" strokeWidth="10" />
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#F0F0F0" strokeWidth="12" />
             <circle
-              cx="59" cy="59" r="48" fill="none" stroke="#C0392B" strokeWidth="10"
-              strokeDasharray="301" strokeDashoffset="150" strokeLinecap="round"
-              transform="rotate(-90 59 59)"
+              cx="60" cy="60" r="48" fill="none" stroke="#C0392B" strokeWidth="12"
+              strokeDasharray="301" strokeDashoffset="123" strokeLinecap="round"
+              transform="rotate(-90 60 60)"
             />
             <circle
-              cx="59" cy="59" r="48" fill="none" stroke="#2471A3" strokeWidth="10"
+              cx="60" cy="60" r="48" fill="none" stroke="#2471A3" strokeWidth="12"
               strokeDasharray="301" strokeDashoffset="90" strokeLinecap="round"
-              transform="rotate(39 59 59)"
+              transform="rotate(97 60 60)"
             />
             <circle
-              cx="59" cy="59" r="48" fill="none" stroke="#D4882A" strokeWidth="10"
+              cx="60" cy="60" r="48" fill="none" stroke="#D4882A" strokeWidth="12"
               strokeDasharray="301" strokeDashoffset="226" strokeLinecap="round"
-              transform="rotate(129 59 59)"
+              transform="rotate(222 60 60)"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-display text-xl font-black text-accent leading-none">1,842</span>
-            <span className="text-[9px] text-muted mt-0.5">kcal left</span>
+            <span className="font-bold text-2xl text-text leading-none">1,842</span>
+            <span className="text-[10px] text-muted mt-1">kcal left</span>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-xs text-text2">
-            <span className="w-2 h-2 rounded-full bg-protein" />
-            Protein · 94 / 160g
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2.5 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-protein" />
+            <span className="text-muted">Protein</span>
+            <span className="font-semibold text-text ml-auto">94 / 160g</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-text2">
-            <span className="w-2 h-2 rounded-full bg-carb" />
-            Carbs · 210 / 300g
+          <div className="flex items-center gap-2.5 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-carb" />
+            <span className="text-muted">Carbs</span>
+            <span className="font-semibold text-text ml-auto">210 / 300g</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-text2">
-            <span className="w-2 h-2 rounded-full bg-fat" />
-            Fat · 48 / 80g
+          <div className="flex items-center gap-2.5 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-fat" />
+            <span className="text-muted">Fat</span>
+            <span className="font-semibold text-text ml-auto">48 / 80g</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-accent font-semibold mt-1">
-            <span className="w-2 h-2 rounded-full bg-accent" />
-            Calories remaining
+          <div className="flex items-center gap-2.5 text-xs mt-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#2D9C7E]" />
+            <span className="text-[#2D9C7E] font-semibold">Calories left</span>
           </div>
         </div>
       </div>
@@ -58,64 +62,71 @@ function MacroRing() {
 
 function AiTipCard() {
   return (
-    <div className="bg-gradient-to-br from-accent-light to-[#FEF9F5] border-[1.5px] border-accent-mid rounded-[14px] p-5">
-      <div className="flex items-center gap-2.5 mb-3">
-        <span className="bg-accent text-white text-[10px] font-bold px-2.5 py-0.5 rounded tracking-wide">
-          AI TIP
-        </span>
-        <span className="font-bold text-sm text-text">Today&apos;s nutrition plan</span>
+    <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg">✨</span>
+        <span className="font-semibold text-sm text-text">AI Tip</span>
       </div>
-      <p className="text-[13px] text-text2 leading-relaxed mb-4">
+      <p className="text-[13px] text-text2 leading-relaxed">
         You&apos;re bulking — target 2,800 kcal. You&apos;re 66g short on protein. A post-workout
         shake + Greek yogurt snack would close the gap perfectly.
       </p>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2.5 p-2.5 bg-surface rounded-lg border border-border text-xs cursor-pointer hover:border-accent-mid transition-colors">
-          <span className="text-base">🥗</span>
-          Lunch suggestion: Chicken rice bowl · 580 kcal · 42g P
-        </div>
-        <div className="flex items-center gap-2.5 p-2.5 bg-surface rounded-lg border border-border text-xs cursor-pointer hover:border-accent-mid transition-colors">
-          <span className="text-base">🍗</span>
-          Dinner: Salmon + sweet potato · 640 kcal · 48g P
-        </div>
-      </div>
     </div>
   );
 }
 
-function MealLog() {
-  const meals = [
-    { type: "Breakfast", time: "8:14 AM", items: [{ name: "Oatmeal + Banana", cal: 320, protein: 12 }] },
-    { type: "Lunch", time: "1:02 PM", items: [{ name: "Grilled Chicken Breast", cal: 246, protein: 46 }, { name: "Brown Rice", cal: 180, protein: 4 }] },
-    { type: "Snack", time: "4:30 PM", items: [{ name: "Greek Yogurt", cal: 130, protein: 18 }] },
+function StatsCards() {
+  const stats = [
+    { icon: "🎯", label: "Program", value: "Bulking" },
+    { icon: "⚡", label: "Activity", value: "Moderate" },
+    { icon: "⚖️", label: "Weight", value: "74.8 kg" },
+    { icon: "📏", label: "Height", value: "178 cm" },
   ];
 
   return (
-    <div className="bg-surface border border-border rounded-[14px] p-5 shadow-sm">
-      <h3 className="font-display font-extrabold text-sm mb-4">Today&apos;s Meals</h3>
-      <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-2 gap-3">
+      {stats.map((s) => (
+        <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <span className="text-xl">{s.icon}</span>
+          <div>
+            <div className="text-[10px] text-muted">{s.label}</div>
+            <div className="font-semibold text-sm text-text">{s.value}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TodaysMeals() {
+  const meals = [
+    { icon: "🥣", type: "Breakfast", time: "8:14 AM", name: "Oatmeal + Banana", cal: 320, protein: 12 },
+    { icon: "🍗", type: "Lunch", time: "1:02 PM", name: "Chicken Rice Bowl", cal: 580, protein: 42 },
+    { icon: "🥛", type: "Snack", time: "4:30 PM", name: "Greek Yogurt", cal: 200, protein: 18 },
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <h3 className="font-semibold text-sm text-text mb-4">Today&apos;s Meals</h3>
+      <div className="flex flex-col gap-3">
         {meals.map((meal) => (
-          <div key={meal.type}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-text2">
-                {meal.type}
-              </span>
-              <span className="text-[10px] text-muted">{meal.time}</span>
+          <div key={meal.type} className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#F5F3EE] flex items-center justify-center text-lg">
+              {meal.icon}
             </div>
-            {meal.items.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between py-2 border-b border-border last:border-0"
-              >
-                <span className="text-xs text-text">{item.name}</span>
-                <div className="flex gap-3">
-                  <span className="text-[10px] text-muted">{item.cal} kcal</span>
-                  <span className="text-[10px] text-protein font-semibold">
-                    {item.protein}g P
-                  </span>
-                </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-xs text-text">{meal.type}</span>
+                <span className="text-[10px] text-muted">{meal.time}</span>
               </div>
-            ))}
+              <div className="flex items-center justify-between mt-0.5">
+                <span className="text-xs text-text2">{meal.name}</span>
+                <span className="text-[10px] text-muted">
+                  {meal.cal} kcal · <span className="text-protein font-semibold">{meal.protein}g P</span>
+                </span>
+              </div>
+            </div>
+            <span className="text-muted2 text-sm ml-1">›</span>
           </div>
         ))}
       </div>
@@ -123,43 +134,23 @@ function MealLog() {
   );
 }
 
-function WaterTracker() {
-  return (
-    <div className="bg-surface border border-border rounded-[14px] p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display font-extrabold text-sm">Water</h3>
-        <span className="text-xs text-water font-semibold">1.8 / 2.5L</span>
-      </div>
-      <div className="h-2 bg-bg2 rounded-full overflow-hidden">
-        <div className="h-full bg-water rounded-full" style={{ width: "72%" }} />
-      </div>
-    </div>
-  );
-}
-
-function StreakBadge() {
-  return (
-    <div className="bg-surface border border-border rounded-[14px] p-4 shadow-sm flex items-center gap-3">
-      <span className="text-2xl">🔥</span>
-      <div>
-        <div className="font-display font-black text-lg text-accent leading-none">12</div>
-        <div className="text-[10px] text-muted">day streak</div>
-      </div>
-    </div>
-  );
-}
-
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-bg pb-28">
+    <div className="min-h-screen bg-[#F5F5F5] pb-24">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 pt-12 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted">Good afternoon,</p>
-            <h1 className="font-display text-xl font-black text-text">John 👋</h1>
+            <h1 className="font-bold text-2xl text-text">John 👋</h1>
           </div>
-          <StreakBadge />
+          <div className="bg-white rounded-xl px-3 py-2 shadow-sm flex items-center gap-2">
+            <span className="text-lg">🔥</span>
+            <div>
+              <div className="font-bold text-sm text-accent leading-none">12</div>
+              <div className="text-[9px] text-muted">Day streak</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -167,8 +158,8 @@ export default function DashboardPage() {
       <div className="px-5 flex flex-col gap-4">
         <MacroRing />
         <AiTipCard />
-        <WaterTracker />
-        <MealLog />
+        <StatsCards />
+        <TodaysMeals />
       </div>
 
       <BottomNav />
