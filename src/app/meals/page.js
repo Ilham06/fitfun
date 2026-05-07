@@ -1,5 +1,6 @@
+import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Calendar, Sparkles, Droplets, ChevronRight, UtensilsCrossed } from "lucide-react";
+import { Calendar, Sparkles, Droplets, ChevronRight, UtensilsCrossed, Plus } from "lucide-react";
 
 export const metadata = { title: "Daily Plan | FitScan" };
 
@@ -161,6 +162,14 @@ export default function MealsPage() {
         <AiRecommendation />
         <WaterCard />
         <MealsList />
+
+        {/* Manual Log Button */}
+        <Link
+          href="/meals/add"
+          className="flex items-center justify-center gap-2 py-3.5 bg-white rounded-2xl border-2 border-dashed border-[#E0E0E0] text-sm font-semibold text-muted hover:border-[#2D9C7E] hover:text-[#2D9C7E] transition-colors shadow-sm"
+        >
+          <Plus size={18} /> Log Meal Manually
+        </Link>
       </div>
 
       <BottomNav />

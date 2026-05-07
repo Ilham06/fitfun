@@ -2,21 +2,51 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Camera, Check } from "lucide-react";
+import { ArrowLeft, Camera, Check, Plus, Trash2, Pencil, ChevronDown, ChevronUp } from "lucide-react";
+
+const initialItems = [
+  { id: 1, name: "White Rice", portionG: 200, kcal: 260, protein: 5, carbs: 57, fat: 0.6 },
+  { id: 2, name: "Grilled Chicken Breast", portionG: 100, kcal: 165, protein: 31, carbs: 0, fat: 3.6 },
+  { id: 3, name: "Stir-Fried Vegetables", portionG: 80, kcal: 45, protein: 2, carbs: 6, fat: 1.8 },
+];
 
 export default function FoodResultPage() {
-  const [portion, setPortion] = useState(1);
+  const [items, setItems] = useState(initialItems);
   const [mealType, setMealType] = useState("LUNCH");
-
-  const base = { name: "Grilled Chicken Breast", portionG: 150, kcal: 246, protein: 46, carbs: 0, fat: 5.4, fiber: 0, confidence: 92 };
-  const scaled = {
-    kcal: Math.round(base.kcal * portion),
-    protein: Math.round(base.protein * portion),
-    carbs: Math.round(base.carbs * portion),
-    fat: Math.round(base.fat * portion * 10) / 10,
-  };
+  const [expandedId, setExpandedId] = useState(null);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"];
+
+  const totals = items.reduce(
+    (acc, item) => ({
+      kcal: acc.kcal + item.kcal,
+      protein: acc.protein + item.protein,
+      carbs: acc.carbs + item.carbs,
+      fat: acc.fat + item.fat,
+    }),
+    { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  const updateItem = (id, field, value) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, [field]: field === "name" ? value : Number(value) || 0 } : item
+      )
+    );
+  };
+
+  const removeItem = (id) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addItem = () => {
+    const newId = Math.max(...items.map((i) => i.id), 0) + 1;
+    setItems((prev) => [
+      ...prev,
+      { id: newId, name: "New Item", portionG: 100, kcal: 0, protein: 0, carbs: 0, fat: 0 },
+    ]);
+    setExpandedId(newId);
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
@@ -28,76 +58,164 @@ export default function FoodResultPage() {
         >
           <ArrowLeft size={18} className="text-text" />
         </Link>
-        <h1 className="font-bold text-lg text-text">
-          Scan Result
-        </h1>
+        <div className="flex-1">
+          <h1 className="font-bold text-lg text-text">Scan Result</h1>
+          <p className="text-[11px] text-muted">{items.length} items detected</p>
+        </div>
       </div>
 
       <div className="px-5 flex flex-col gap-4 pb-8">
-        {/* Confidence badge */}
+        {/* Source badges */}
         <div className="flex gap-2">
           <span className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(45,156,126,0.1)] text-[#2D9C7E]">
             <Camera size={12} /> GPT-4o Vision
           </span>
           <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[rgba(45,156,126,0.06)] text-[#2D9C7E]">
-            {base.confidence}% confident
+            Tap item to edit
           </span>
         </div>
 
-        {/* Nutrition Card */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="font-bold text-base text-text">{base.name}</h2>
-              <p className="text-xs text-muted mt-0.5">
-                1 portion · ~{Math.round(base.portionG * portion)}g
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="font-bold text-3xl text-[#2D9C7E] leading-none">
-                {scaled.kcal}
-              </div>
-              <div className="text-[10px] text-muted">kcal</div>
-            </div>
-          </div>
+        {/* Detected Items */}
+        <div className="flex flex-col gap-2.5">
+          {items.map((item) => {
+            const isExpanded = expandedId === item.id;
+            return (
+              <div key={item.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                {/* Item Summary Row */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                  className="w-full flex items-center gap-3 p-4 text-left"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#E8F5F0] flex items-center justify-center flex-shrink-0">
+                    <Pencil size={16} className="text-[#2D9C7E]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm text-text truncate">{item.name}</div>
+                    <div className="text-[11px] text-muted mt-0.5">
+                      {item.portionG}g · {item.protein}g P · {item.carbs}g C · {item.fat}g F
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0 mr-1">
+                    <div className="font-bold text-sm text-[#2D9C7E]">{item.kcal}</div>
+                    <div className="text-[9px] text-muted">kcal</div>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronUp size={16} className="text-muted2 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown size={16} className="text-muted2 flex-shrink-0" />
+                  )}
+                </button>
 
-          <div className="flex flex-col gap-2.5">
-            <MacroBar label="Protein" value={scaled.protein} max={160} color="bg-protein" />
-            <MacroBar label="Carbs" value={scaled.carbs} max={300} color="bg-carb" />
-            <MacroBar label="Fat" value={scaled.fat} max={80} color="bg-fat" />
-          </div>
+                {/* Expanded Edit Form */}
+                {isExpanded && (
+                  <div className="px-4 pb-4 border-t border-[#F0F0F0]">
+                    <div className="pt-4 flex flex-col gap-3">
+                      <div>
+                        <label className="text-[10px] font-semibold text-muted mb-1 block">Food Name</label>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => updateItem(item.id, "name", e.target.value)}
+                          className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted mb-1 block">Portion (g)</label>
+                          <input
+                            type="number"
+                            value={item.portionG}
+                            onChange={(e) => updateItem(item.id, "portionG", e.target.value)}
+                            className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted mb-1 block">Calories (kcal)</label>
+                          <input
+                            type="number"
+                            value={item.kcal}
+                            onChange={(e) => updateItem(item.id, "kcal", e.target.value)}
+                            className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted mb-1 block">Protein (g)</label>
+                          <input
+                            type="number"
+                            value={item.protein}
+                            onChange={(e) => updateItem(item.id, "protein", e.target.value)}
+                            className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted mb-1 block">Carbs (g)</label>
+                          <input
+                            type="number"
+                            value={item.carbs}
+                            onChange={(e) => updateItem(item.id, "carbs", e.target.value)}
+                            className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted mb-1 block">Fat (g)</label>
+                          <input
+                            type="number"
+                            value={item.fat}
+                            onChange={(e) => updateItem(item.id, "fat", e.target.value)}
+                            className="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-[#2D9C7E] transition-colors"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="flex items-center justify-center gap-1.5 py-2 text-[#C0392B] text-xs font-semibold hover:bg-[#FFF5F5] rounded-lg transition-colors"
+                      >
+                        <Trash2 size={14} /> Remove Item
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Add Item Button */}
+          <button
+            onClick={addItem}
+            className="flex items-center justify-center gap-2 py-3.5 bg-white rounded-2xl border-2 border-dashed border-[#E0E0E0] text-sm font-semibold text-muted hover:border-[#2D9C7E] hover:text-[#2D9C7E] transition-colors shadow-sm"
+          >
+            <Plus size={18} /> Add Item
+          </button>
         </div>
 
-        {/* Portion Slider */}
+        {/* Total Summary */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <h3 className="font-semibold text-sm text-text mb-3">Total</h3>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-text2">Portion</span>
-            <span className="font-bold text-[#2D9C7E]">
-              {portion}×
-            </span>
+            <span className="text-xs text-muted">Total Calories</span>
+            <span className="font-bold text-xl text-[#2D9C7E]">{totals.kcal} kcal</span>
           </div>
-          <input
-            type="range"
-            min="0.5"
-            max="3"
-            step="0.25"
-            value={portion}
-            onChange={(e) => setPortion(parseFloat(e.target.value))}
-            className="w-full accent-[#2D9C7E]"
-          />
-          <div className="flex justify-between text-[10px] text-muted2 mt-1">
-            <span>0.5×</span>
-            <span>1×</span>
-            <span>2×</span>
-            <span>3×</span>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="text-center p-2.5 bg-[#F8F8F8] rounded-xl">
+              <div className="text-[10px] text-muted mb-0.5">Protein</div>
+              <div className="font-bold text-protein">{totals.protein}g</div>
+            </div>
+            <div className="text-center p-2.5 bg-[#F8F8F8] rounded-xl">
+              <div className="text-[10px] text-muted mb-0.5">Carbs</div>
+              <div className="font-bold text-carb">{totals.carbs}g</div>
+            </div>
+            <div className="text-center p-2.5 bg-[#F8F8F8] rounded-xl">
+              <div className="text-[10px] text-muted mb-0.5">Fat</div>
+              <div className="font-bold text-fat">{totals.fat}g</div>
+            </div>
           </div>
         </div>
 
         {/* Meal Type Picker */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <span className="text-xs font-semibold text-text2 mb-3 block">
-            Meal Type
-          </span>
+          <span className="text-xs font-semibold text-text2 mb-3 block">Meal Type</span>
           <div className="flex gap-2">
             {mealTypes.map((type) => (
               <button
@@ -120,24 +238,9 @@ export default function FoodResultPage() {
           href="/dashboard"
           className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
         >
-          <Check size={18} /> Log Meal
+          <Check size={18} /> Log Meal ({items.length} items)
         </Link>
       </div>
-    </div>
-  );
-}
-
-function MacroBar({ label, value, max, color }) {
-  const pct = Math.min((value / max) * 100, 100);
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="w-12 text-[11px] text-muted">{label}</span>
-      <div className="flex-1 h-[5px] bg-[#F0F0F0] rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="w-8 text-right text-[11px] text-text2 font-medium">
-        {value}g
-      </span>
     </div>
   );
 }
