@@ -1,18 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Target } from "lucide-react";
+import { useOnboarding } from "@/components/onboarding-provider";
 import { completeOnboarding } from "@/lib/auth-actions";
+import { calculateTDEE, calculateTargets } from "@/lib/tdee";
+import { useState } from "react";
+
+const PROGRAM_LABELS = {
+  BULKING: "Bulking (+15%)",
+  CUTTING: "Cutting (−20%)",
+  MAINTENANCE: "Maintenance (=)",
+};
 
 export default function OnboardingGoal() {
-  const [targetWeight, setTargetWeight] = useState("");
+  const { data, update } = useOnboarding();
+  const [loading, setLoading] = useState(false);
 
-  const tdee = 2420;
-  const dailyCal = 2783;
-  const protein = 209;
-  const carbs = 313;
-  const fat = 77;
+  const weightKg = parseFloat(data.weight) || 70;
+  const heightCm = parseFloat(data.height) || 170;
+  const age = parseInt(data.age, 10) || 25;
+
+  const tdee = calculateTDEE({
+    age,
+    gender: data.gender,
+    weightKg,
+    heightCm,
+    activityLevel: data.activityLevel,
+  });
+
+  const { dailyCalTarget, proteinTargetG, carbTargetG, fatTargetG } = calculateTargets({
+    tdee,
+    program: data.program,
+  });
+
+  async function handleSubmit() {
+    setLoading(true);
+    await completeOnboarding(data);
+  }
 
   return (
     <>
@@ -35,57 +60,47 @@ export default function OnboardingGoal() {
             <input
               type="number"
               placeholder="70"
-              value={targetWeight}
-              onChange={(e) => setTargetWeight(e.target.value)}
+              value={data.targetWeight}
+              onChange={(e) => update({ targetWeight: e.target.value })}
               className="w-full bg-white border-[1.5px] border-border2 rounded-xl pl-9 pr-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
             />
           </div>
         </div>
 
         <div className="bg-white border border-border rounded-2xl p-5 shadow-sm">
-          <h3 className="font-bold text-sm mb-4">
-            Your Daily Targets
-          </h3>
+          <h3 className="font-bold text-sm mb-4">Your Daily Targets</h3>
 
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
             <span className="text-xs text-muted">Base TDEE</span>
-            <span className="font-bold text-lg text-text">
-              {tdee} kcal
-            </span>
+            <span className="font-bold text-lg text-text">{tdee} kcal</span>
           </div>
 
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
             <div>
               <span className="text-xs text-muted block">Daily Target</span>
               <span className="text-[10px] text-[#2D9C7E] font-semibold">
-                Bulking (+15%)
+                {PROGRAM_LABELS[data.program]}
               </span>
             </div>
             <span className="font-bold text-2xl text-[#2D9C7E]">
-              {dailyCal}
+              {dailyCalTarget}
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center p-3 bg-[#F8F8F8] rounded-xl">
               <div className="text-xs text-muted mb-1">Protein</div>
-              <div className="font-bold text-protein text-lg">
-                {protein}g
-              </div>
+              <div className="font-bold text-protein text-lg">{proteinTargetG}g</div>
               <div className="text-[10px] text-muted2">30%</div>
             </div>
             <div className="text-center p-3 bg-[#F8F8F8] rounded-xl">
               <div className="text-xs text-muted mb-1">Carbs</div>
-              <div className="font-bold text-carb text-lg">
-                {carbs}g
-              </div>
+              <div className="font-bold text-carb text-lg">{carbTargetG}g</div>
               <div className="text-[10px] text-muted2">45%</div>
             </div>
             <div className="text-center p-3 bg-[#F8F8F8] rounded-xl">
               <div className="text-xs text-muted mb-1">Fat</div>
-              <div className="font-bold text-fat text-lg">
-                {fat}g
-              </div>
+              <div className="font-bold text-fat text-lg">{fatTargetG}g</div>
               <div className="text-[10px] text-muted2">25%</div>
             </div>
           </div>
@@ -99,14 +114,13 @@ export default function OnboardingGoal() {
         >
           Back
         </Link>
-        <form action={completeOnboarding} className="flex-1">
-          <button
-            type="submit"
-            className="w-full h-12 flex items-center justify-center rounded-xl bg-[#2D9C7E] text-white text-sm font-semibold shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors cursor-pointer"
-          >
-            Start FitScan
-          </button>
-        </form>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="flex-1 h-12 flex items-center justify-center rounded-xl bg-[#2D9C7E] text-white text-sm font-semibold shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors cursor-pointer disabled:opacity-60"
+        >
+          {loading ? "Saving..." : "Start FitScan"}
+        </button>
       </div>
     </>
   );

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { TrendingUp, TrendingDown, Equal } from "lucide-react";
+import { useOnboarding } from "@/components/onboarding-provider";
 
 const programs = [
   {
@@ -32,7 +32,7 @@ const programs = [
 ];
 
 export default function OnboardingProgram() {
-  const [selected, setSelected] = useState("BULKING");
+  const { data, update } = useOnboarding();
 
   return (
     <>
@@ -49,9 +49,9 @@ export default function OnboardingProgram() {
           return (
             <button
               key={prog.id}
-              onClick={() => setSelected(prog.id)}
+              onClick={() => update({ program: prog.id })}
               className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all bg-white ${
-                selected === prog.id
+                data.program === prog.id
                   ? "border-[#2D9C7E] shadow-md"
                   : "border-transparent shadow-sm hover:border-[#2D9C7E]/30"
               }`}
@@ -65,7 +65,7 @@ export default function OnboardingProgram() {
                 </span>
                 <span className="text-xs text-muted mt-0.5">{prog.desc}</span>
               </div>
-              {selected === prog.id && (
+              {data.program === prog.id && (
                 <div className="w-6 h-6 rounded-full bg-[#2D9C7E] flex items-center justify-center">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

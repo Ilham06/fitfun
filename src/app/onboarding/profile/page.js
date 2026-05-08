@@ -1,19 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Weight, Ruler } from "lucide-react";
+import { useOnboarding } from "@/components/onboarding-provider";
 
 export default function OnboardingProfile() {
-  const [form, setForm] = useState({
-    name: "John Doe",
-    age: "",
-    gender: "male",
-    weight: "",
-    height: "",
-  });
-
-  const update = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+  const { data, update } = useOnboarding();
 
   return (
     <>
@@ -31,8 +23,9 @@ export default function OnboardingProfile() {
           </label>
           <input
             type="text"
-            value={form.name}
-            onChange={(e) => update("name", e.target.value)}
+            placeholder="Your name"
+            value={data.name}
+            onChange={(e) => update({ name: e.target.value })}
             className="w-full bg-white border-[1.5px] border-border2 rounded-xl px-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
           />
         </div>
@@ -45,8 +38,8 @@ export default function OnboardingProfile() {
             <input
               type="number"
               placeholder="24"
-              value={form.age}
-              onChange={(e) => update("age", e.target.value)}
+              value={data.age}
+              onChange={(e) => update({ age: e.target.value })}
               className="w-full bg-white border-[1.5px] border-border2 rounded-xl px-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
             />
           </div>
@@ -55,8 +48,8 @@ export default function OnboardingProfile() {
               Gender
             </label>
             <select
-              value={form.gender}
-              onChange={(e) => update("gender", e.target.value)}
+              value={data.gender}
+              onChange={(e) => update({ gender: e.target.value })}
               className="w-full bg-white border-[1.5px] border-border2 rounded-xl px-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
             >
               <option value="male">Male</option>
@@ -77,8 +70,8 @@ export default function OnboardingProfile() {
             <input
               type="number"
               placeholder="75"
-              value={form.weight}
-              onChange={(e) => update("weight", e.target.value)}
+              value={data.weight}
+              onChange={(e) => update({ weight: e.target.value })}
               className="w-full bg-white border-[1.5px] border-border2 rounded-xl pl-9 pr-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
             />
           </div>
@@ -95,8 +88,8 @@ export default function OnboardingProfile() {
             <input
               type="number"
               placeholder="178"
-              value={form.height}
-              onChange={(e) => update("height", e.target.value)}
+              value={data.height}
+              onChange={(e) => update({ height: e.target.value })}
               className="w-full bg-white border-[1.5px] border-border2 rounded-xl pl-9 pr-3 py-2.5 text-sm text-text outline-none focus:border-[#2D9C7E] focus:bg-white transition-colors shadow-sm"
             />
           </div>

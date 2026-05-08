@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Armchair, Footprints, Bike, Flame } from "lucide-react";
+import { useOnboarding } from "@/components/onboarding-provider";
 
 const levels = [
   { id: "sedentary", icon: Armchair, name: "Sedentary", desc: "Little or no exercise", multiplier: "×1.2" },
@@ -12,7 +12,7 @@ const levels = [
 ];
 
 export default function OnboardingActivity() {
-  const [selected, setSelected] = useState("moderately_active");
+  const { data, update } = useOnboarding();
 
   return (
     <>
@@ -29,9 +29,9 @@ export default function OnboardingActivity() {
           return (
             <button
               key={level.id}
-              onClick={() => setSelected(level.id)}
+              onClick={() => update({ activityLevel: level.id })}
               className={`flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all bg-white ${
-                selected === level.id
+                data.activityLevel === level.id
                   ? "border-[#2D9C7E] shadow-md"
                   : "border-transparent shadow-sm hover:border-[#2D9C7E]/30"
               }`}
@@ -44,7 +44,7 @@ export default function OnboardingActivity() {
                 <div className="text-xs text-muted mt-0.5">{level.desc}</div>
               </div>
               <span className="text-xs font-bold text-[#2D9C7E]">{level.multiplier}</span>
-              {selected === level.id && (
+              {data.activityLevel === level.id && (
                 <div className="w-6 h-6 rounded-full bg-[#2D9C7E] flex items-center justify-center">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
