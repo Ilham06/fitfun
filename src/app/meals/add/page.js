@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Check, Search, X } from "lucide-react";
 import { foodDatabase, calculateNutrition, searchFood } from "@/lib/food-database";
 
@@ -109,7 +110,9 @@ function FoodSearchInput({ onSelect, selectedFood }) {
 }
 
 export default function AddMealPage() {
+  const router = useRouter();
   const [mealType, setMealType] = useState("LUNCH");
+  const [saving, setSaving] = useState(false);
   const [items, setItems] = useState([{ id: 1, foodId: null, name: "", portionG: 100, kcal: 0, protein: 0, carbs: 0, fat: 0 }]);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"];
@@ -361,12 +364,38 @@ export default function AddMealPage() {
         )}
 
         {/* Save Button */}
-        <Link
-          href="/meals"
-          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
+        <button
+          onClick={async () => {
+            const validItems = items.filter((i) => i.name && i.kcal > 0);
+            if (validItems.length === 0) return;
+            setSaving(true);
+            try {
+              await fetch("/api/food/log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  mealType,
+                  items: validItems.map((i) => ({
+                    name: i.name,
+                    calories: i.kcal,
+                    proteinG: i.protein,
+                    carbG: i.carbs,
+                    fatG: i.fat,
+                    portionG: i.portionG,
+                    source: i.foodId ? "DATABASE" : "MANUAL",
+                  })),
+                }),
+              });
+              router.push("/meals");
+            } catch {
+              setSaving(false);
+            }
+          }}
+          disabled={saving}
+          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors cursor-pointer disabled:opacity-60"
         >
-          <Check size={18} /> Log Meal ({items.length} {items.length === 1 ? "item" : "items"})
-        </Link>
+          <Check size={18} /> {saving ? "Saving..." : `Log Meal (${items.length} ${items.length === 1 ? "item" : "items"})`}
+        </button>
       </div>
     </div>
   );

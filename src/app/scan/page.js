@@ -1,16 +1,85 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import BottomNav from "@/components/bottom-nav";
-import { ArrowLeft, Camera, Image, Zap, Apple, Ruler } from "lucide-react";
+import { ArrowLeft, Camera, Image, Zap, Apple, Ruler, Loader2 } from "lucide-react";
 
 export default function ScanPage() {
   const [mode, setMode] = useState("food");
+  const [scanning, setScanning] = useState(false);
+  const fileInputRef = useRef(null);
+  const router = useRouter();
+
+  const handleCapture = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setScanning(true);
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result;
+
+      if (mode === "food") {
+        try {
+          const res = await fetch("/api/food/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: base64 }),
+          });
+          const data = await res.json();
+          if (data.items) {
+            sessionStorage.setItem("scanResult", JSON.stringify(data.items));
+            router.push("/scan/result");
+          } else {
+            alert(data.error || "Scan failed");
+            setScanning(false);
+          }
+        } catch {
+          alert("Network error");
+          setScanning(false);
+        }
+      } else {
+        try {
+          const res = await fetch("/api/body/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: base64 }),
+          });
+          const data = await res.json();
+          if (data.measurements) {
+            sessionStorage.setItem("bodyScanResult", JSON.stringify(data.measurements));
+            router.push("/scan/body-confirm");
+          } else {
+            alert(data.error || "Scan failed");
+            setScanning(false);
+          }
+        } catch {
+          alert("Network error");
+          setScanning(false);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-24 flex flex-col">
-      {/* Header */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+
       <div className="px-5 pt-12 pb-2">
         <div className="flex items-center gap-3 mb-1">
           <Link
@@ -24,7 +93,6 @@ export default function ScanPage() {
         <p className="text-xs text-muted ml-12">What would you like to scan?</p>
       </div>
 
-      {/* Mode Toggle Cards */}
       <div className="px-5 py-4">
         <div className="flex gap-3">
           <button
@@ -68,7 +136,6 @@ export default function ScanPage() {
         </div>
       </div>
 
-      {/* Camera Viewfinder */}
       <div className="px-5 flex-1">
         <div className="relative w-full aspect-[3/4] bg-[#1E2A2A] rounded-3xl overflow-hidden flex flex-col items-center justify-center">
           <div className="absolute top-8 left-8 w-8 h-8 border-t-[3px] border-l-[3px] border-white/50 rounded-tl-xl" />
@@ -76,33 +143,44 @@ export default function ScanPage() {
           <div className="absolute bottom-16 left-8 w-8 h-8 border-b-[3px] border-l-[3px] border-white/50 rounded-bl-xl" />
           <div className="absolute bottom-16 right-8 w-8 h-8 border-b-[3px] border-r-[3px] border-white/50 rounded-br-xl" />
 
-          <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-4">
-            {mode === "food" ? (
-              <Apple size={36} className="text-white/50" />
-            ) : (
-              <Ruler size={36} className="text-white/50" />
-            )}
-          </div>
-
-          <p className="text-white/60 text-sm text-center px-8">
-            {mode === "food"
-              ? "Point camera at food or barcode"
-              : "Point camera at tape measure or note"}
-          </p>
+          {scanning ? (
+            <>
+              <Loader2 size={36} className="text-white/70 animate-spin mb-4" />
+              <p className="text-white/60 text-sm">Analyzing with AI...</p>
+            </>
+          ) : (
+            <>
+              <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                {mode === "food" ? (
+                  <Apple size={36} className="text-white/50" />
+                ) : (
+                  <Ruler size={36} className="text-white/50" />
+                )}
+              </div>
+              <p className="text-white/60 text-sm text-center px-8">
+                {mode === "food"
+                  ? "Point camera at food or barcode"
+                  : "Point camera at tape measure or note"}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Capture Button */}
       <div className="py-5 flex items-center justify-center gap-6">
-        <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+        <button
+          onClick={handleCapture}
+          className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center"
+        >
           <Image size={20} className="text-muted" />
         </button>
-        <Link
-          href={mode === "food" ? "/scan/result" : "/scan/body-confirm"}
-          className="w-16 h-16 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_14px_rgba(45,156,126,0.4)] hover:bg-[#258C6E] transition-colors"
+        <button
+          onClick={handleCapture}
+          disabled={scanning}
+          className="w-16 h-16 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_14px_rgba(45,156,126,0.4)] hover:bg-[#258C6E] transition-colors disabled:opacity-60"
         >
           <Camera size={26} className="text-white" />
-        </Link>
+        </button>
         <button className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
           <Zap size={20} className="text-muted" />
         </button>

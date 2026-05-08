@@ -1,19 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Camera, Check, Plus, Trash2, Pencil, ChevronDown, ChevronUp } from "lucide-react";
 
-const initialItems = [
+const fallbackItems = [
   { id: 1, name: "White Rice", portionG: 200, kcal: 260, protein: 5, carbs: 57, fat: 0.6 },
   { id: 2, name: "Grilled Chicken Breast", portionG: 100, kcal: 165, protein: 31, carbs: 0, fat: 3.6 },
   { id: 3, name: "Stir-Fried Vegetables", portionG: 80, kcal: 45, protein: 2, carbs: 6, fat: 1.8 },
 ];
 
 export default function FoodResultPage() {
-  const [items, setItems] = useState(initialItems);
+  const router = useRouter();
+  const [items, setItems] = useState(fallbackItems);
   const [mealType, setMealType] = useState("LUNCH");
   const [expandedId, setExpandedId] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("scanResult");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const mapped = parsed.map((item, i) => ({
+          id: i + 1,
+          name: item.name,
+          portionG: item.portionG || 100,
+          kcal: item.kcal || 0,
+          protein: item.proteinG || 0,
+          carbs: item.carbG || 0,
+          fat: item.fatG || 0,
+        }));
+        if (mapped.length > 0) setItems(mapped);
+        sessionStorage.removeItem("scanResult");
+      } catch { /* use fallback */ }
+    }
+  }, []);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SNACK"];
 
@@ -234,12 +257,36 @@ export default function FoodResultPage() {
         </div>
 
         {/* Save Button */}
-        <Link
-          href="/dashboard"
-          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
+        <button
+          onClick={async () => {
+            setSaving(true);
+            try {
+              await fetch("/api/food/log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  mealType,
+                  items: items.map((i) => ({
+                    name: i.name,
+                    calories: i.kcal,
+                    proteinG: i.protein,
+                    carbG: i.carbs,
+                    fatG: i.fat,
+                    portionG: i.portionG,
+                    source: "GPT_VISION",
+                  })),
+                }),
+              });
+              router.push("/dashboard");
+            } catch {
+              setSaving(false);
+            }
+          }}
+          disabled={saving}
+          className="w-full h-13 flex items-center justify-center gap-2 rounded-xl bg-[#2D9C7E] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors cursor-pointer disabled:opacity-60"
         >
-          <Check size={18} /> Log Meal ({items.length} items)
-        </Link>
+          <Check size={18} /> {saving ? "Saving..." : `Log Meal (${items.length} items)`}
+        </button>
       </div>
     </div>
   );

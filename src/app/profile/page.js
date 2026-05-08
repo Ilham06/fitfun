@@ -1,34 +1,50 @@
-import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
 import { User, Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = { title: "Profile | FitScan" };
 
-function ProfileHeader() {
+const ACTIVITY_LABELS = {
+  sedentary: "Sedentary",
+  lightly_active: "Light Active",
+  moderately_active: "Moderate",
+  very_active: "Very Active",
+};
+
+async function getProfileData(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { profile: true },
+  });
+  return user;
+}
+
+function ProfileHeader({ user, profile }) {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
       <div className="w-14 h-14 rounded-full bg-[#E8F5F0] flex items-center justify-center">
         <User size={28} className="text-[#2D9C7E]" />
       </div>
       <div className="flex-1">
-        <h2 className="font-bold text-base">John Doe</h2>
-        <p className="text-xs text-muted">john.doe@gmail.com</p>
+        <h2 className="font-bold text-base">{user.name || "User"}</h2>
+        <p className="text-xs text-muted">{user.email}</p>
       </div>
       <div className="text-right">
-        <div className="font-bold text-[#2D9C7E] text-lg">2,783</div>
+        <div className="font-bold text-[#2D9C7E] text-lg">{profile.dailyCalTarget.toLocaleString()}</div>
         <div className="text-[10px] text-muted">daily kcal</div>
       </div>
     </div>
   );
 }
 
-function StatsCards() {
+function StatsCards({ profile }) {
   const stats = [
-    { icon: Target, label: "Program", value: "Bulking" },
-    { icon: Zap, label: "Activity", value: "Moderate" },
-    { icon: Weight, label: "Weight", value: "74.8 kg" },
-    { icon: Ruler, label: "Height", value: "178 cm" },
+    { icon: Target, label: "Program", value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase() },
+    { icon: Zap, label: "Activity", value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel },
+    { icon: Weight, label: "Weight", value: `${profile.weightKg} kg` },
+    { icon: Ruler, label: "Height", value: `${profile.heightCm} cm` },
   ];
 
   return (
@@ -51,11 +67,11 @@ function StatsCards() {
   );
 }
 
-function MacroTargets() {
+function MacroTargets({ profile }) {
   const macros = [
-    { label: "Protein", value: "209g", pct: "30%", color: "text-protein" },
-    { label: "Carbs", value: "313g", pct: "45%", color: "text-carb" },
-    { label: "Fat", value: "77g", pct: "25%", color: "text-fat" },
+    { label: "Protein", value: `${profile.proteinTargetG}g`, pct: "30%", color: "text-protein" },
+    { label: "Carbs", value: `${profile.carbTargetG}g`, pct: "45%", color: "text-carb" },
+    { label: "Fat", value: `${profile.fatTargetG}g`, pct: "25%", color: "text-fat" },
   ];
 
   return (
@@ -65,9 +81,7 @@ function MacroTargets() {
         {macros.map((m) => (
           <div key={m.label} className="text-center p-3 bg-[#F8F8F8] rounded-xl">
             <div className="text-[10px] text-muted mb-1">{m.label}</div>
-            <div className={`font-bold text-lg ${m.color}`}>
-              {m.value}
-            </div>
+            <div className={`font-bold text-lg ${m.color}`}>{m.value}</div>
             <div className="text-[10px] text-muted2">{m.pct}</div>
           </div>
         ))}
@@ -110,7 +124,18 @@ function SettingsList() {
   );
 }
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const session = await auth();
+  const user = session?.user?.id ? await getProfileData(session.user.id) : null;
+
+  if (!user?.profile) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+        <p className="text-muted">Profile not found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-24">
       <div className="px-5 pt-12 pb-4">
@@ -118,9 +143,9 @@ export default function ProfilePage() {
       </div>
 
       <div className="px-5 flex flex-col gap-4">
-        <ProfileHeader />
-        <StatsCards />
-        <MacroTargets />
+        <ProfileHeader user={user} profile={user.profile} />
+        <StatsCards profile={user.profile} />
+        <MacroTargets profile={user.profile} />
         <SettingsList />
 
         <form action={signOutAction}>
