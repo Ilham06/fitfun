@@ -1,5 +1,5 @@
 import BottomNav from "@/components/bottom-nav";
-import { User, Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight } from "lucide-react";
+import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Flame, Droplets, Award } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -23,17 +23,50 @@ async function getProfileData(userId) {
 
 function ProfileHeader({ user, profile }) {
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
-      <div className="w-14 h-14 rounded-full bg-[#E8F5F0] flex items-center justify-center">
-        <User size={28} className="text-[#2D9C7E]" />
+    <div className="relative overflow-hidden bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#3B0764] rounded-3xl p-5 shadow-lg">
+      <div className="absolute top-0 left-0 right-0 bottom-0 opacity-20">
+        <svg viewBox="0 0 400 200" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+          <circle cx="50" cy="30" r="4" fill="#A78BFA" />
+          <circle cx="100" cy="60" r="3" fill="#C4B5FD" />
+          <circle cx="150" cy="20" r="2" fill="#DDD6FE" />
+          <circle cx="250" cy="40" r="3" fill="#A78BFA" />
+          <circle cx="300" cy="80" r="4" fill="#C4B5FD" />
+          <circle cx="350" cy="25" r="2" fill="#DDD6FE" />
+          <circle cx="80" cy="120" r="3" fill="#A78BFA" />
+          <circle cx="320" cy="140" r="2" fill="#C4B5FD" />
+        </svg>
       </div>
-      <div className="flex-1">
-        <h2 className="font-bold text-base">{user.name || "User"}</h2>
-        <p className="text-xs text-muted">{user.email}</p>
-      </div>
-      <div className="text-right">
-        <div className="font-bold text-[#2D9C7E] text-lg">{profile.dailyCalTarget.toLocaleString()}</div>
-        <div className="text-[10px] text-muted">daily kcal</div>
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFE0B2] to-[#FFCC80] flex items-center justify-center text-3xl border-3 border-white/30 shadow-lg">
+              🏋️
+            </div>
+            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#2D9C7E] text-[8px] font-bold text-white shadow-sm">
+              Lv. 12
+            </span>
+          </div>
+
+          <div className="flex-1">
+            <h2 className="font-bold text-lg text-white">{user.name || "FitWarrior"}</h2>
+            <p className="text-[11px] text-white/50">{user.email}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-[#FFA726] to-[#FFD54F] rounded-full" style={{ width: "62%" }} />
+              </div>
+              <span className="text-[9px] text-white/50">3,106 / 5,000 XP</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FFA726] to-[#FF8F00] flex items-center justify-center shadow-md">
+              <Award size={18} className="text-white" />
+            </div>
+            <span className="text-[9px] text-[#FFA726] font-bold">Gold</span>
+            <span className="text-[8px] text-white/40">Rank</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -41,10 +74,10 @@ function ProfileHeader({ user, profile }) {
 
 function StatsCards({ profile }) {
   const stats = [
-    { icon: Target, label: "Program", value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase() },
-    { icon: Zap, label: "Activity", value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel },
-    { icon: Weight, label: "Weight", value: `${profile.weightKg} kg` },
-    { icon: Ruler, label: "Height", value: `${profile.heightCm} cm` },
+    { icon: Target, label: "Program", value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase(), color: "text-[#2D9C7E]", bg: "bg-[#E8F5F0]" },
+    { icon: Zap, label: "Activity", value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel, color: "text-[#F59E0B]", bg: "bg-[#FFF8E1]" },
+    { icon: Weight, label: "Weight", value: `${profile.weightKg} kg`, color: "text-[#7C3AED]", bg: "bg-[#F3E8FF]" },
+    { icon: Ruler, label: "Height", value: `${profile.heightCm} cm`, color: "text-[#EC4899]", bg: "bg-[#FCE7F3]" },
   ];
 
   return (
@@ -52,13 +85,13 @@ function StatsCards({ profile }) {
       {stats.map((s) => {
         const Icon = s.icon;
         return (
-          <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#F5F5F5] flex items-center justify-center">
-              <Icon size={18} className="text-[#2D9C7E]" />
+          <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm border border-[#F0F0F0] flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center`}>
+              <Icon size={18} className={s.color} />
             </div>
             <div>
-              <div className="text-[10px] text-muted">{s.label}</div>
-              <div className="font-semibold text-sm text-text">{s.value}</div>
+              <div className="text-[10px] text-gray-400 font-medium">{s.label}</div>
+              <div className="font-bold text-sm text-gray-800">{s.value}</div>
             </div>
           </div>
         );
@@ -68,21 +101,26 @@ function StatsCards({ profile }) {
 }
 
 function MacroTargets({ profile }) {
+  const totalCal = profile.dailyCalTarget;
+  const proteinPct = totalCal > 0 ? Math.round((profile.proteinTargetG * 4 / totalCal) * 100) : 0;
+  const carbPct = totalCal > 0 ? Math.round((profile.carbTargetG * 4 / totalCal) * 100) : 0;
+  const fatPct = totalCal > 0 ? Math.round((profile.fatTargetG * 9 / totalCal) * 100) : 0;
+
   const macros = [
-    { label: "Protein", value: `${profile.proteinTargetG}g`, pct: "30%", color: "text-protein" },
-    { label: "Carbs", value: `${profile.carbTargetG}g`, pct: "45%", color: "text-carb" },
-    { label: "Fat", value: `${profile.fatTargetG}g`, pct: "25%", color: "text-fat" },
+    { label: "Protein", value: `${profile.proteinTargetG}g`, pct: `${proteinPct}%`, color: "text-[#EF5350]", bg: "bg-[#FFEBEE]" },
+    { label: "Carbs", value: `${profile.carbTargetG}g`, pct: `${carbPct}%`, color: "text-[#42A5F5]", bg: "bg-[#E3F2FD]" },
+    { label: "Fat", value: `${profile.fatTargetG}g`, pct: `${fatPct}%`, color: "text-[#FFA726]", bg: "bg-[#FFF3E0]" },
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm">
-      <h3 className="font-semibold text-sm mb-4">Daily Targets</h3>
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
+      <h3 className="font-bold text-sm text-gray-800 mb-4">Daily Targets</h3>
       <div className="grid grid-cols-3 gap-3">
         {macros.map((m) => (
-          <div key={m.label} className="text-center p-3 bg-[#F8F8F8] rounded-xl">
-            <div className="text-[10px] text-muted mb-1">{m.label}</div>
-            <div className={`font-bold text-lg ${m.color}`}>{m.value}</div>
-            <div className="text-[10px] text-muted2">{m.pct}</div>
+          <div key={m.label} className={`text-center p-3 ${m.bg} rounded-2xl`}>
+            <div className="text-[10px] text-gray-500 mb-1">{m.label}</div>
+            <div className={`font-black text-xl ${m.color}`}>{m.value}</div>
+            <div className="text-[10px] text-gray-400 mt-0.5">{m.pct}</div>
           </div>
         ))}
       </div>
@@ -99,24 +137,24 @@ function SettingsList() {
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-[#F0F0F0]">
       {items.map((item, i) => {
         const Icon = item.icon;
         return (
           <button
             key={item.label}
-            className={`w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-[#F8F8F8] transition-colors ${
+            className={`w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-[#F8F9FA] transition-colors ${
               i < items.length - 1 ? "border-b border-[#F0F0F0]" : ""
             }`}
           >
-            <div className="w-9 h-9 rounded-lg bg-[#F5F5F5] flex items-center justify-center">
-              <Icon size={18} className="text-muted" />
+            <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] flex items-center justify-center">
+              <Icon size={16} className="text-gray-400" />
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold text-text">{item.label}</div>
-              <div className="text-[11px] text-muted">{item.desc}</div>
+              <div className="text-sm font-semibold text-gray-800">{item.label}</div>
+              <div className="text-[11px] text-gray-400">{item.desc}</div>
             </div>
-            <ChevronRight size={16} className="text-muted2" />
+            <ChevronRight size={16} className="text-gray-300" />
           </button>
         );
       })}
@@ -130,16 +168,30 @@ export default async function ProfilePage() {
 
   if (!user?.profile) {
     return (
-      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
-        <p className="text-muted">Profile not found</p>
+      <div className="min-h-screen bg-[#F5F9F7] flex items-center justify-center">
+        <p className="text-gray-400">Profile not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] pb-24">
-      <div className="px-5 pt-12 pb-4">
-        <h1 className="font-bold text-xl text-text">Profile</h1>
+    <div className="min-h-screen bg-[#F5F9F7] pb-24">
+      {/* Header */}
+      <div className="px-5 pt-12 pb-3">
+        <div className="flex items-center justify-between mb-4">
+          <div />
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-white rounded-full px-2.5 py-1.5 shadow-sm">
+              <Flame size={14} className="text-orange-500" />
+              <span className="text-xs font-bold text-gray-700">12</span>
+            </div>
+            <div className="flex items-center gap-1 bg-white rounded-full px-2.5 py-1.5 shadow-sm">
+              <Droplets size={14} className="text-blue-500" />
+              <span className="text-xs font-bold text-gray-700">230</span>
+            </div>
+          </div>
+        </div>
+        <h1 className="font-black text-2xl text-gray-800">Profile</h1>
       </div>
 
       <div className="px-5 flex flex-col gap-4">
@@ -151,7 +203,7 @@ export default async function ProfilePage() {
         <form action={signOutAction}>
           <button
             type="submit"
-            className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border border-[rgba(192,57,43,0.18)] bg-[rgba(192,57,43,0.05)] text-[#C0392B] font-semibold text-sm hover:bg-[rgba(192,57,43,0.1)] transition-colors cursor-pointer"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 text-red-500 font-bold text-sm hover:bg-red-100 transition-colors cursor-pointer"
           >
             <LogOut size={16} />
             Sign Out
