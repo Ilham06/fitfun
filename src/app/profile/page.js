@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
 import { User, Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight } from "lucide-react";
+import { signOutAction } from "@/lib/auth-actions";
 
 export const metadata = { title: "Profile | FitScan" };
 
@@ -122,13 +123,15 @@ export default function ProfilePage() {
         <MacroTargets />
         <SettingsList />
 
-        <Link
-          href="/login"
-          className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border border-[rgba(192,57,43,0.18)] bg-[rgba(192,57,43,0.05)] text-[#C0392B] font-semibold text-sm hover:bg-[rgba(192,57,43,0.1)] transition-colors"
-        >
-          <LogOut size={16} />
-          Sign Out
-        </Link>
+        <form action={signOutAction}>
+          <button
+            type="submit"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border border-[rgba(192,57,43,0.18)] bg-[rgba(192,57,43,0.05)] text-[#C0392B] font-semibold text-sm hover:bg-[rgba(192,57,43,0.1)] transition-colors cursor-pointer"
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </form>
       </div>
 
       <BottomNav />
