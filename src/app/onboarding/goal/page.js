@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Target } from "lucide-react";
+import { completeOnboarding } from "@/lib/auth-actions";
 
 export default function OnboardingGoal() {
   const [targetWeight, setTargetWeight] = useState("");
@@ -98,12 +99,14 @@ export default function OnboardingGoal() {
         >
           Back
         </Link>
-        <Link
-          href="/dashboard"
-          className="flex-1 h-12 flex items-center justify-center rounded-xl bg-[#2D9C7E] text-white text-sm font-semibold shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
-        >
-          Start FitScan
-        </Link>
+        <form action={completeOnboarding} className="flex-1">
+          <button
+            type="submit"
+            className="w-full h-12 flex items-center justify-center rounded-xl bg-[#2D9C7E] text-white text-sm font-semibold shadow-[0_2px_8px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors cursor-pointer"
+          >
+            Start FitScan
+          </button>
+        </form>
       </div>
     </>
   );

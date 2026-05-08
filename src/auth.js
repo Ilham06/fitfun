@@ -16,10 +16,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.onboardingDone = user.onboardingDone;
+      }
+      if (trigger === "update" || !token.onboardingDone) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { onboardingDone: true },
+        });
+        if (dbUser) {
+          token.onboardingDone = dbUser.onboardingDone;
+        }
       }
       return token;
     },
