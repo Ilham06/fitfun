@@ -19,15 +19,18 @@ export async function GET(request) {
     end.setHours(23, 59, 59, 999);
   }
 
-  const logs = await prisma.foodLog.findMany({
+  const meals = await prisma.meal.findMany({
     where: {
       userId: session.user.id,
       loggedAt: { gte: start, lte: end },
     },
+    include: {
+      items: true,
+    },
     orderBy: { loggedAt: "asc" },
   });
 
-  return successResponse({ logs });
+  return successResponse({ meals });
 }
 
 export async function POST(request) {
@@ -45,22 +48,32 @@ export async function POST(request) {
     return errorResponse("Valid mealType is required (BREAKFAST, LUNCH, DINNER, SNACK)", "VALIDATION", 400);
   }
 
-  const created = await prisma.foodLog.createMany({
-    data: items.map((item) => ({
+  const meal = await prisma.meal.create({
+    data: {
       userId: session.user.id,
-      name: item.name,
       mealType,
-      calories: Math.round(item.calories),
-      proteinG: item.proteinG,
-      carbG: item.carbG,
-      fatG: item.fatG,
-      fiberG: item.fiberG || null,
-      sodiumMg: item.sodiumMg || null,
-      portionG: item.portionG || 100,
-      portionMultiplier: item.portionMultiplier || 1.0,
-      source: item.source || "MANUAL",
-    })),
+      source: items[0]?.source || "MANUAL",
+      items: {
+        create: items.map((item) => ({
+          userId: session.user.id,
+          name: item.name,
+          mealType,
+          calories: Math.round(item.calories),
+          proteinG: item.proteinG,
+          carbG: item.carbG,
+          fatG: item.fatG,
+          fiberG: item.fiberG || null,
+          sodiumMg: item.sodiumMg || null,
+          portionG: item.portionG || 100,
+          portionMultiplier: item.portionMultiplier || 1.0,
+          source: item.source || "MANUAL",
+        })),
+      },
+    },
+    include: {
+      items: true,
+    },
   });
 
-  return successResponse({ count: created.count }, 201);
+  return successResponse({ meal }, 201);
 }

@@ -23,9 +23,9 @@ async function getDashboardData(userId) {
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999);
 
+  // Calculate totals from all food logs
   const todayLogs = await prisma.foodLog.findMany({
     where: { userId, loggedAt: { gte: todayStart, lte: todayEnd } },
-    orderBy: { loggedAt: "asc" },
   });
 
   const consumed = todayLogs.reduce(
@@ -38,7 +38,37 @@ async function getDashboardData(userId) {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
-  return { profile, consumed, meals: todayLogs };
+  // Fetch meals (grouped) and standalone logs (legacy)
+  const mealsWithItems = await prisma.meal.findMany({
+    where: { userId, loggedAt: { gte: todayStart, lte: todayEnd } },
+    include: { items: true },
+  });
+
+  const standaloneLogs = await prisma.foodLog.findMany({
+    where: { userId, mealId: null, loggedAt: { gte: todayStart, lte: todayEnd } },
+  });
+
+  // Normalize into a single list format
+  const combinedMeals = [
+    ...mealsWithItems.map(m => ({
+      id: m.id,
+      mealType: m.mealType,
+      loggedAt: m.loggedAt,
+      items: m.items,
+      totalCalories: m.items.reduce((sum, item) => sum + item.calories, 0),
+      totalProtein: m.items.reduce((sum, item) => sum + item.proteinG, 0),
+    })),
+    ...standaloneLogs.map(log => ({
+      id: log.id,
+      mealType: log.mealType,
+      loggedAt: log.loggedAt,
+      items: [log],
+      totalCalories: log.calories,
+      totalProtein: log.proteinG,
+    }))
+  ].sort((a, b) => new Date(a.loggedAt) - new Date(b.loggedAt));
+
+  return { profile, consumed, meals: combinedMeals };
 }
 
 function HeroBanner({ name, streak, profile }) {
@@ -261,10 +291,6 @@ function TodaysMeal({ meals }) {
     );
   }
 
-  const latest = meals[meals.length - 1];
-  const colors = MEAL_COLORS[latest.mealType] || MEAL_COLORS.SNACK;
-  const time = new Date(latest.loggedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-
   return (
     <div className="mx-5 bg-[#F0FDF4] rounded-3xl p-5 shadow-sm border border-[#BBF7D0] relative overflow-hidden">
       <img src="/images/meals.png" alt="Meals" className="absolute top-2 right-2 w-16 h-16 object-contain opacity-90" />
@@ -274,18 +300,19 @@ function TodaysMeal({ meals }) {
       <div className="flex flex-col gap-2.5 relative z-10">
         {meals.slice(-3).map((meal) => {
           const c = MEAL_COLORS[meal.mealType] || MEAL_COLORS.SNACK;
+          const itemNames = meal.items.map((i) => i.name).join(", ");
           return (
             <div key={meal.id} className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center shadow-sm`}>
+              <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center shadow-sm flex-shrink-0`}>
                 <UtensilsCrossed size={16} className={c.icon} />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <span className="font-semibold text-xs text-gray-800 block">
                   {meal.mealType.charAt(0) + meal.mealType.slice(1).toLowerCase()}
                 </span>
-                <span className="text-[11px] text-gray-500">{meal.name}</span>
+                <span className="text-[11px] text-gray-500 block truncate">{itemNames}</span>
               </div>
-              <span className="text-[10px] text-gray-400 font-medium">{meal.calories} kcal · {Math.round(meal.proteinG)}gP</span>
+              <span className="text-[10px] text-gray-400 font-medium flex-shrink-0">{meal.totalCalories} kcal · {Math.round(meal.totalProtein)}gP</span>
             </div>
           );
         })}

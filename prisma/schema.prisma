@@ -37,6 +37,7 @@ model User {
   accounts       Account[]
   profile        UserProfile?
   foodLogs       FoodLog[]
+  meals          Meal[]
   bodyLogs       BodyMeasurement[]
 }
 
@@ -58,10 +59,22 @@ model UserProfile {
   fatTargetG     Int
 }
 
+model Meal {
+  id       String    @id @default(cuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealType String
+  source   String    @default("MANUAL")
+  items    FoodLog[]
+  loggedAt DateTime  @default(now())
+}
+
 model FoodLog {
   id                String   @id @default(cuid())
   userId            String
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealId            String?
+  meal              Meal?    @relation(fields: [mealId], references: [id], onDelete: Cascade)
   name              String
   mealType          String
   calories          Int
