@@ -154,7 +154,7 @@ function MealsList({ meals }) {
   return (
     <div className="bg-gradient-to-br from-[#2E1065] to-[#4C1D95] rounded-3xl p-5 shadow-lg relative overflow-hidden">
       <div className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/5" />
-      <div className="absolute -right-2 -bottom-2 text-4xl opacity-80">🐱</div>
+      <img src="/images/cat-cook.png" alt="Cat Cook" className="absolute right-0 bottom-0 w-24 h-24 object-contain opacity-80" />
 
       <h3 className="font-bold text-sm text-white mb-4">Today&apos;s Quest</h3>
       <div className="flex flex-col gap-3 relative z-10">
@@ -211,16 +211,27 @@ export default async function MealsPage() {
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
       {/* Purple Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#3B0764] via-[#4C1D95] to-[#5B21B6] px-5 pt-12 pb-8 rounded-b-[32px]">
-        <div className="absolute top-0 left-0 right-0 bottom-0 opacity-10">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#4C1D95] to-[#F5F9F7] px-5 pt-6 pb-[32vh]">
+        <div className="absolute top-0 left-0 right-0 bottom-0 opacity-10" style={{ WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 80%)", maskImage: "linear-gradient(to bottom, black 40%, transparent 80%)" }}>
           <svg viewBox="0 0 400 150" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-            <circle cx="350" cy="120" r="80" fill="#A78BFA" />
-            <circle cx="50" cy="20" r="30" fill="#A78BFA" />
+            <circle cx="30" cy="120" r="60" fill="#A78BFA" />
+            <circle cx="50" cy="20" r="30" fill="#C4B5FD" />
+            <circle cx="120" cy="80" r="20" fill="#8B5CF6" />
+            <circle cx="80" cy="130" r="15" fill="#A78BFA" />
+            <circle cx="160" cy="30" r="25" fill="#DDD6FE" />
+            <circle cx="10" cy="60" r="12" fill="#8B5CF6" />
+            <circle cx="90" cy="40" r="10" fill="#C4B5FD" />
+            <circle cx="40" cy="80" r="8" fill="#DDD6FE" />
+            <circle cx="140" cy="120" r="35" fill="#A78BFA" />
+            <circle cx="70" cy="70" r="22" fill="#C4B5FD" />
+            <circle cx="110" cy="10" r="18" fill="#8B5CF6" />
+            <circle cx="-10" cy="30" r="40" fill="#DDD6FE" />
+            <circle cx="180" cy="90" r="14" fill="#C4B5FD" />
           </svg>
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2 mb-5">
+          <div className="flex items-center justify-end gap-2">
             <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1.5">
               <Flame size={14} className="text-orange-400" />
               <span className="text-xs font-bold text-white">12</span>
@@ -239,12 +250,12 @@ export default async function MealsPage() {
               <h1 className="font-black text-2xl text-white">Daily Plan</h1>
               <p className="text-xs text-white/60 mt-0.5">Level up your day!</p>
             </div>
-            <div className="text-4xl -mb-1">🐱</div>
+            <img src="/images/cat-cook.png" alt="Cat Cook" className="w-32 h-32 object-contain -mb-1 -mb-10" />
           </div>
         </div>
       </div>
 
-      <div className="px-5 flex flex-col gap-4 mt-5">
+      <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         <TodaysNutrition consumed={consumed} profile={profile} />
         <AiRecommendation />
         <WaterCard />

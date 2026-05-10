@@ -41,7 +41,7 @@ async function getDashboardData(userId) {
   return { profile, consumed, meals: todayLogs };
 }
 
-function HeroBanner({ name, streak }) {
+function HeroBanner({ name, streak, profile }) {
   const hour = new Date().getHours();
 
   let greeting = "Good evening";
@@ -90,10 +90,12 @@ function HeroBanner({ name, streak }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center border-3 border-white">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FFE0B2] to-[#FFCC80] flex items-center justify-center text-2xl">
-              🏋️
-            </div>
+          <div className="w-16 h-16 rounded-full bg-gray-100 shadow-lg flex items-center justify-center border-4 border-white overflow-hidden">
+            <img 
+              src={profile?.gender?.toLowerCase() === 'female' ? '/images/woman-avatar.png' : '/images/men-avatar.png'} 
+              alt="Avatar" 
+              className="w-full h-full object-cover" 
+            />
           </div>
           <div className="flex-1">
             <p className={`${textColor} text-xs font-medium`}>{greeting},</p>
@@ -315,7 +317,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
-      <HeroBanner name={session.user.name?.split(" ")[0]} streak={0} />
+      <HeroBanner name={session.user.name?.split(" ")[0]} streak={0} profile={profile} />
       <QuestCard consumed={consumed} profile={profile} />
 
       <div className="flex flex-col gap-4 mt-4">

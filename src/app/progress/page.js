@@ -60,7 +60,7 @@ async function getProgressData(userId) {
 function WeightChart({ points, goal }) {
   if (points.length === 0) {
     return (
-      <div className="bg-gradient-to-br from-[#FCE4EC] to-[#F8BBD0]/60 rounded-3xl p-5 shadow-sm border border-[#F8BBD0]/40">
+      <div className="bg-gradient-to-br from-[#FCE4EC] to-[#F8BBD0] rounded-3xl p-5 shadow-sm border border-[#F8BBD0]/40">
         <h3 className="font-bold text-base text-gray-800 mb-2">Weight</h3>
         <div className="flex items-center gap-4">
           <div className="flex-1">
@@ -69,9 +69,6 @@ function WeightChart({ points, goal }) {
               <br />Log a body measurement
               <br />to see your chart.
             </p>
-          </div>
-          <div className="w-24 h-24 flex items-center justify-center text-5xl">
-            🦕
           </div>
         </div>
       </div>
@@ -248,17 +245,27 @@ export default async function ProgressPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#E8D5F5] via-[#D4B8E8] to-[#C9A5E0] px-5 pt-12 pb-6 rounded-b-[32px]">
-        <div className="absolute top-0 left-0 right-0 bottom-0 opacity-20">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#C9A5E0] to-[#F5F9F7] px-5 pt-6 pb-[32vh]">
+        <div className="absolute top-0 left-0 right-0 bottom-0 opacity-20" style={{ WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 80%)", maskImage: "linear-gradient(to bottom, black 40%, transparent 80%)" }}>
           <svg viewBox="0 0 400 150" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-            <circle cx="50" cy="30" r="20" fill="#9C27B0" />
-            <circle cx="350" cy="40" r="15" fill="#9C27B0" />
-            <circle cx="200" cy="10" r="8" fill="#CE93D8" />
+            <circle cx="30" cy="120" r="60" fill="#E8D5F5" />
+            <circle cx="50" cy="20" r="30" fill="#CE93D8" />
+            <circle cx="120" cy="80" r="20" fill="#9C27B0" />
+            <circle cx="80" cy="130" r="15" fill="#D4B8E8" />
+            <circle cx="160" cy="30" r="25" fill="#E8D5F5" />
+            <circle cx="10" cy="60" r="12" fill="#9C27B0" />
+            <circle cx="90" cy="40" r="10" fill="#CE93D8" />
+            <circle cx="40" cy="80" r="8" fill="#D4B8E8" />
+            <circle cx="140" cy="120" r="35" fill="#CE93D8" />
+            <circle cx="70" cy="70" r="22" fill="#9C27B0" />
+            <circle cx="110" cy="10" r="18" fill="#CE93D8" />
+            <circle cx="-10" cy="30" r="40" fill="#E8D5F5" />
+            <circle cx="180" cy="90" r="14" fill="#D4B8E8" />
           </svg>
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2 mb-5">
+          <div className="flex items-center justify-end gap-2">
             <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
               <Flame size={14} className="text-orange-500" />
               <span className="text-xs font-bold text-gray-700">12</span>
@@ -267,24 +274,25 @@ export default async function ProgressPage() {
               <Droplets size={14} className="text-blue-500" />
               <span className="text-xs font-bold text-gray-700">230</span>
             </div>
+            <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
+              <Calendar size={14} className="text-gray-600" />
+            </button>
             <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
               <Bell size={14} className="text-gray-600" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-end justify-between">
             <div>
               <h1 className="font-black text-2xl text-gray-800">Quest Progress</h1>
               <p className="text-xs text-gray-600 mt-0.5">Track your transformation</p>
             </div>
-            <button className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
-              <Calendar size={18} className="text-gray-600" />
-            </button>
+            <img src="/images/dino-workout.png" alt="Dino Workout" className="w-32 h-32 object-contain -mb-10" />
           </div>
         </div>
       </div>
 
-      <div className="px-5 flex flex-col gap-4 mt-5">
+      <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         <WeightChart points={weightPoints} goal={profile.targetWeightKg} />
         <MacroAdherence consumed={consumed} profile={profile} />
         <CalorieTrend days={last7Days} target={profile.dailyCalTarget} />
