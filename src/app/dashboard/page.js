@@ -42,14 +42,36 @@ async function getDashboardData(userId) {
 }
 
 function HeroBanner({ name, streak }) {
-  const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
+  const hour = new Date().getHours();
+
+  let greeting = "Good evening";
+  let bgImage = "/bg/header-bg-night.png";
+  let textColor = "text-white";
+
+  if (hour >= 5 && hour < 12) {
+    greeting = "Good morning";
+    bgImage = "/bg/header-bg-morning.png";
+    textColor = "text-black";
+  } else if (hour >= 12 && hour < 15) {
+    greeting = "Good afternoon";
+    bgImage = "/bg/header-bg-day.png";
+    textColor = "text-black";
+  } else if (hour >= 15 && hour < 18) {
+    greeting = "Good afternoon";
+    bgImage = "/bg/header-bg-afternoon.png";
+    textColor = "text-black";
+  } else {
+    greeting = "Good evening";
+    bgImage = "/bg/header-bg-night.png";
+    textColor = "text-white";
+  }
 
   return (
-    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-12 pb-8">
+    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[164px]">
       <img
-        src="/images/home-header.png"
+        src={bgImage}
         alt=""
-        className="absolute bottom-0 left-0 right-0 w-full h-auto object-contain object-bottom pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 w-full object-contain object-bottom pointer-events-none h-auto"
       />
 
       <div className="relative z-10">
@@ -74,8 +96,8 @@ function HeroBanner({ name, streak }) {
             </div>
           </div>
           <div className="flex-1">
-            <p className="text-white/80 text-xs font-medium">{greeting},</p>
-            <h1 className="font-black text-xl text-white drop-shadow-sm">
+            <p className={`${textColor} text-xs font-medium`}>{greeting},</p>
+            <h1 className={`font-black text-xl ${textColor} drop-shadow-sm`}>
               {name || "FitWarrior"} 💪
             </h1>
             <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-bold text-white backdrop-blur-sm">
@@ -95,7 +117,7 @@ function QuestCard({ consumed, profile }) {
   const strokeOffset = circumference - (calPct / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] -mt-5 mx-5 relative z-20">
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] mx-5 -mt-4 relative z-20">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-sm text-gray-800">Today&apos;s Quest</h3>
         <span className="text-xs font-bold text-[#2D9C7E] bg-[#E8F5F0] px-2.5 py-1 rounded-full">
@@ -161,14 +183,14 @@ function AiTipCard({ profile, consumed }) {
     : profile.dailyCalTarget;
 
   return (
-    <div className="mx-5 bg-gradient-to-r from-[#E3F2FD] to-[#BBDEFB] rounded-3xl p-4 shadow-sm border border-[#90CAF9]/30">
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
-          <Bot size={24} className="text-[#1976D2]" />
+    <div className="mx-5 bg-[#5B21B6] rounded-3xl p-4 shadow-md">
+      <div className="flex items-stretch gap-3">
+        <div className="flex-shrink-0 w-16">
+          <img src="/images/ai.png" alt="AI" className="w-full h-full object-contain object-top" />
         </div>
         <div className="flex-1">
-          <span className="font-bold text-xs text-[#1565C0] mb-1 block">AI Tip</span>
-          <p className="text-[12px] text-gray-700 leading-relaxed">
+          <span className="font-bold text-xs text-[#E9D5FF] mb-1 block">AI Tip</span>
+          <p className="text-[12px] text-white/90 leading-relaxed">
             You&apos;re <span className="font-bold">{profile.program.toLowerCase()}</span> — target {target} kcal.
             {proteinLeft > 0 && (
               <>
@@ -229,9 +251,10 @@ const MEAL_COLORS = {
 function TodaysMeal({ meals }) {
   if (meals.length === 0) {
     return (
-      <div className="mx-5 bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-        <h3 className="font-bold text-sm text-gray-800 mb-3">Today&apos;s Meal</h3>
-        <p className="text-xs text-gray-400 text-center py-6">No meals logged yet. Scan or add a meal to start your quest!</p>
+      <div className="mx-5 bg-[#F0FDF4] rounded-3xl p-5 shadow-sm border border-[#BBF7D0] relative overflow-hidden">
+        <img src="/images/meals.png" alt="Meals" className="absolute -right-2 top-1/2 -translate-y-1/2 w-24 h-24 object-contain opacity-80 -mt-5" />
+        <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">Today&apos;s Meal</h3>
+        <p className="text-xs text-gray-500 text-left py-4 relative z-10 w-[70%]">No meals logged yet. Scan or add a meal to start your quest!</p>
       </div>
     );
   }
@@ -241,11 +264,10 @@ function TodaysMeal({ meals }) {
   const time = new Date(latest.loggedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 
   return (
-    <div className="mx-5 bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] relative overflow-hidden">
-      <div className="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-[#E8F5F0] opacity-50" />
-      <div className="absolute -right-1 -bottom-1 w-20 h-20 rounded-full bg-[#A8E6CF]/30" />
+    <div className="mx-5 bg-[#F0FDF4] rounded-3xl p-5 shadow-sm border border-[#BBF7D0] relative overflow-hidden">
+      <img src="/images/meals.png" alt="Meals" className="absolute top-2 right-2 w-16 h-16 object-contain opacity-90" />
 
-      <h3 className="font-bold text-sm text-gray-800 mb-3">Today&apos;s Meal</h3>
+      <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">Today&apos;s Meal</h3>
 
       <div className="flex flex-col gap-2.5 relative z-10">
         {meals.slice(-3).map((meal) => {
