@@ -2,8 +2,11 @@ import OpenAI from "openai";
 
 const globalForOpenAI = globalThis;
 
-export const openai = globalForOpenAI.openai ?? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-if (process.env.NODE_ENV !== "production") globalForOpenAI.openai = openai;
+export function getOpenAI() {
+  if (!globalForOpenAI.openai) {
+    globalForOpenAI.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return globalForOpenAI.openai;
+}

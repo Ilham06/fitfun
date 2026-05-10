@@ -1,4 +1,4 @@
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 import { getSessionOrThrow, errorResponse, successResponse } from "@/lib/utils";
 
 export async function POST(request) {
@@ -13,7 +13,7 @@ export async function POST(request) {
   }
 
   try {
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: "gpt-4o",
       messages: [
         {

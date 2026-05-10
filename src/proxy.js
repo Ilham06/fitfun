@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-const publicPaths = ["/", "/login", "/api/auth"];
+const publicPaths = ["/", "/login", "/api/auth", "/api/health"];
 
 function isPublicPath(pathname) {
   return publicPaths.some(
@@ -28,9 +28,6 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/onboarding/profile", req.url));
   }
 
-  if (session.user?.onboardingDone && isOnboarding) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
 
   return NextResponse.next();
 });

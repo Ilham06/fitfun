@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import BottomNav from "@/components/bottom-nav";
 import { Flame, Droplets, Bell, Bot, Target, Zap, Weight, Ruler, UtensilsCrossed } from "lucide-react";
 import { auth } from "@/auth";
@@ -6,7 +7,15 @@ import { prisma } from "@/lib/prisma";
 export const metadata = { title: "Home | FitScan" };
 
 async function getDashboardData(userId) {
-  const profile = await prisma.userProfile.findUnique({ where: { userId } });
+  console.log("[DASHBOARD] getDashboardData called, userId:", userId);
+  let profile;
+  try {
+    profile = await prisma.userProfile.findUnique({ where: { userId } });
+    console.log("[DASHBOARD] Profile query result:", profile ? "found" : "NOT FOUND");
+  } catch (err) {
+    console.error("[DASHBOARD] Profile query ERROR:", err.message);
+    return null;
+  }
   if (!profile) return null;
 
   const todayStart = new Date();
@@ -36,18 +45,12 @@ function HeroBanner({ name, streak }) {
   const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-br from-[#A8E6CF] via-[#88D8B0] to-[#6BC5A0] px-5 pt-12 pb-8">
-      <div className="absolute top-0 left-0 right-0 bottom-0 opacity-30">
-        <svg viewBox="0 0 400 200" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-          <ellipse cx="60" cy="180" rx="30" ry="50" fill="#4CAF50" />
-          <ellipse cx="100" cy="170" rx="40" ry="60" fill="#66BB6A" />
-          <ellipse cx="320" cy="175" rx="35" ry="55" fill="#4CAF50" />
-          <ellipse cx="360" cy="180" rx="25" ry="45" fill="#66BB6A" />
-          <circle cx="80" cy="40" r="8" fill="#FFF9C4" opacity="0.6" />
-          <circle cx="300" cy="50" r="6" fill="#FFF9C4" opacity="0.5" />
-          <circle cx="200" cy="20" r="10" fill="#FFF9C4" opacity="0.4" />
-        </svg>
-      </div>
+    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-12 pb-8">
+      <img
+        src="/images/home-header.png"
+        alt=""
+        className="absolute bottom-0 left-0 right-0 w-full h-auto object-contain object-bottom pointer-events-none"
+      />
 
       <div className="relative z-10">
         <div className="flex items-center justify-end gap-2 mb-4">
@@ -268,15 +271,22 @@ function TodaysMeal({ meals }) {
 }
 
 export default async function DashboardPage() {
+  console.log("[DASHBOARD] Start rendering...");
   const session = await auth();
-  const data = session?.user?.id ? await getDashboardData(session.user.id) : null;
+  console.log("[DASHBOARD] Session:", JSON.stringify(session?.user || null));
+
+  if (!session?.user?.id) {
+    console.log("[DASHBOARD] No session, redirecting to /login");
+    redirect("/login");
+  }
+
+  console.log("[DASHBOARD] Fetching data for userId:", session.user.id);
+  const data = await getDashboardData(session.user.id);
+  console.log("[DASHBOARD] Data result:", data ? "has profile" : "NO profile");
 
   if (!data) {
-    return (
-      <div className="min-h-screen bg-[#F5F9F7] flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
-      </div>
-    );
+    console.log("[DASHBOARD] No profile, redirecting to /onboarding/profile");
+    redirect("/onboarding/profile");
   }
 
   const { profile, consumed, meals } = data;
