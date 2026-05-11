@@ -97,7 +97,7 @@ function HeroBanner({ name, streak, profile }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[164px]">
+    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[250px]">
       <img
         src={bgImage}
         alt=""
@@ -149,7 +149,7 @@ function QuestCard({ consumed, profile }) {
   const strokeOffset = circumference - (calPct / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] mx-5 -mt-4 relative z-20">
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] mx-5 -mt-24 relative z-20">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-sm text-gray-800">Today&apos;s Quest</h3>
         <span className="text-xs font-bold text-[#2D9C7E] bg-[#E8F5F0] px-2.5 py-1 rounded-full">
