@@ -1,229 +1,130 @@
+import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Calendar, Flame, Droplets, Bell } from "lucide-react";
+import { Flame, Droplets, Bell, Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export const metadata = { title: "Quest Progress | FitScan" };
+export const metadata = { title: "Body Progress | FitScan" };
 
 async function getProgressData(userId) {
-  const profile = await prisma.userProfile.findUnique({ where: { userId } });
-  if (!profile) return null;
-
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-
-  const [foodLogs, bodyLogs] = await Promise.all([
-    prisma.foodLog.findMany({
-      where: { userId, loggedAt: { gte: weekAgo } },
-      orderBy: { loggedAt: "asc" },
-    }),
-    prisma.bodyMeasurement.findMany({
-      where: { userId, measuredAt: { gte: weekAgo } },
-      orderBy: { measuredAt: "asc" },
-    }),
-  ]);
-
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayLogs = foodLogs.filter((l) => l.loggedAt >= todayStart);
-  const consumed = todayLogs.reduce(
-    (acc, log) => ({
-      calories: acc.calories + log.calories,
-      protein: acc.protein + log.proteinG,
-      carbs: acc.carbs + log.carbG,
-      fat: acc.fat + log.fatG,
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  );
-
-  const dailyCals = {};
-  foodLogs.forEach((log) => {
-    const day = log.loggedAt.toISOString().split("T")[0];
-    dailyCals[day] = (dailyCals[day] || 0) + log.calories;
+  const bodyLogs = await prisma.bodyMeasurement.findMany({
+    where: { userId },
+    orderBy: { measuredAt: "desc" },
+    take: 30,
   });
 
-  const last7Days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().split("T")[0];
-    last7Days.push(dailyCals[key] || 0);
-  }
+  const reversed = [...bodyLogs].reverse();
 
-  const weightPoints = bodyLogs
-    .filter((l) => l.weightKg)
-    .map((l) => l.weightKg);
+  const weightPoints = reversed.filter((l) => l.weightKg).map((l) => l.weightKg);
+  const muscleMassPoints = reversed.filter((l) => l.muscleMassKg).map((l) => l.muscleMassKg);
+  const bodyFatPoints = reversed.filter((l) => l.bodyFatPct).map((l) => l.bodyFatPct);
+  const bmiPoints = reversed.filter((l) => l.bmi).map((l) => l.bmi);
 
-  return { profile, consumed, last7Days, weightPoints };
+  return { logs: bodyLogs, weightPoints, muscleMassPoints, bodyFatPoints, bmiPoints };
 }
 
-function WeightChart({ points, goal }) {
-  if (points.length === 0) {
-    return (
-      <div className="bg-gradient-to-br from-[#FCE4EC] to-[#F8BBD0] rounded-3xl p-5 shadow-sm border border-[#F8BBD0]/40">
-        <h3 className="font-bold text-base text-gray-800 mb-2">Weight</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <p className="text-xs text-gray-600 leading-relaxed">
-              No weight measurements yet.
-              <br />Log a body measurement
-              <br />to see your chart.
-            </p>
+function TrendChart({ title, points, unit, color, icon: Icon }) {
+  if (points.length === 0) return null;
+
+  const max = Math.max(...points) + 0.5;
+  const min = Math.min(...points) - 0.5;
+  const range = max - min || 1;
+  const latest = points[points.length - 1];
+
+  const chartPoints = points.map((val, i) => {
+    const x = 10 + (i / Math.max(points.length - 1, 1)) * 280;
+    const y = 110 - ((val - min) / range) * 100;
+    return { x, y, val };
+  });
+
+  const pathData = chartPoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const gradientId = `grad_${title.replace(/\s/g, "")}`;
+
+  return (
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
+            <Icon size={16} style={{ color }} />
           </div>
+          <h3 className="font-bold text-sm text-gray-800">{title}</h3>
         </div>
+        <span className="text-sm font-bold" style={{ color }}>{latest}{unit}</span>
+      </div>
+
+      <div className="relative h-24">
+        <svg className="w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+              <stop offset="100%" stopColor={color} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path
+            d={`${pathData} L ${chartPoints[chartPoints.length - 1].x} 120 L ${chartPoints[0].x} 120 Z`}
+            fill={`url(#${gradientId})`}
+          />
+          <path
+            d={pathData}
+            fill="none"
+            stroke={color}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {chartPoints.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r="3" fill={color} />
+          ))}
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function LogList({ logs }) {
+  if (logs.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
+        <p className="text-xs text-gray-400 text-center py-4">No measurements logged yet.</p>
       </div>
     );
   }
 
-  const max = Math.max(...points) + 1;
-  const min = Math.min(goal || points[points.length - 1], ...points) - 1;
-  const range = max - min || 1;
-
-  return (
-    <div className="bg-gradient-to-br from-[#FCE4EC] to-[#F8BBD0]/60 rounded-3xl p-5 shadow-sm border border-[#F8BBD0]/40">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-base text-gray-800">Weight</h3>
-        <span className="text-[11px] text-gray-500 font-medium">Recent</span>
-      </div>
-      <div className="relative h-36">
-        <div className="ml-7 relative h-full">
-          {goal && (
-            <div
-              className="absolute left-0 right-0 border-t-[1.5px] border-dashed border-[#E91E63]/50"
-              style={{ bottom: `${((goal - min) / range) * 100}%` }}
-            >
-              <span className="absolute -top-4 right-0 text-[9px] text-[#E91E63] font-medium">
-                Goal: {goal}kg
-              </span>
-            </div>
-          )}
-          <svg className="w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="none">
-            <polyline
-              fill="none"
-              stroke="#E91E63"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              points={points
-                .map((p, i) => `${(i / Math.max(points.length - 1, 1)) * 300},${120 - ((p - min) / range) * 120}`)
-                .join(" ")}
-            />
-            {points.map((p, i) => (
-              <circle
-                key={i}
-                cx={(i / Math.max(points.length - 1, 1)) * 300}
-                cy={120 - ((p - min) / range) * 120}
-                r="4"
-                fill="#E91E63"
-              />
-            ))}
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MacroAdherence({ consumed, profile }) {
-  const data = [
-    { label: "Protein", current: Math.round(consumed.protein), target: profile.proteinTargetG, color: "bg-[#EF5350]", dot: "bg-[#EF5350]" },
-    { label: "Carbs", current: Math.round(consumed.carbs), target: profile.carbTargetG, color: "bg-[#42A5F5]", dot: "bg-[#42A5F5]" },
-    { label: "Fat", current: Math.round(consumed.fat), target: profile.fatTargetG, color: "bg-[#FFA726]", dot: "bg-[#FFA726]" },
-  ];
-
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="font-bold text-base text-gray-800">Macro Adherence</h3>
-        <span className="text-[11px] text-gray-400 font-medium">Today</span>
-      </div>
-      <div className="flex flex-col gap-4">
-        {data.map((item) => (
-          <div key={item.label}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className={`w-3 h-3 rounded-full ${item.dot}`} />
-                <span className="text-sm font-semibold text-gray-700">{item.label}</span>
+      <h3 className="font-bold text-sm text-gray-800 mb-4">History</h3>
+      <div className="flex flex-col gap-3">
+        {logs.slice(0, 10).map((log) => {
+          const date = new Date(log.measuredAt);
+          const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          const timeStr = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+
+          return (
+            <div key={log.id} className="flex items-center gap-3 py-2 border-b border-[#F5F5F5] last:border-0">
+              <div className="w-9 h-9 rounded-xl bg-[#E8F5F0] flex items-center justify-center">
+                <Weight size={16} className="text-[#2D9C7E]" />
               </div>
-              <span className="text-xs font-bold text-gray-600">
-                {item.current} / {item.target}g
-              </span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm text-gray-800">{log.weightKg} kg</span>
+                  {log.bmi && <span className="text-[10px] text-gray-400">BMI {log.bmi}</span>}
+                </div>
+                <div className="flex items-center gap-3 mt-0.5">
+                  {log.muscleMassKg && (
+                    <span className="text-[10px] text-[#F57C00] font-medium">Muscle {log.muscleMassKg}kg</span>
+                  )}
+                  {log.bodyFatPct && (
+                    <span className="text-[10px] text-[#EC4899] font-medium">Fat {log.bodyFatPct}%</span>
+                  )}
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-gray-400 block">{dateStr}</span>
+                <span className="text-[10px] text-gray-300">{timeStr}</span>
+              </div>
             </div>
-            <div className="h-2.5 bg-[#F0F0F0] rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full ${item.color}`}
-                style={{ width: `${Math.min((item.current / item.target) * 100, 100)}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CalorieTrend({ days, target }) {
-  const max = Math.max(target, ...days) + 200;
-  const validDays = days.some((d) => d > 0);
-
-  const points = days.map((cal, i) => {
-    const x = 10 + (i / 6) * 280;
-    const y = validDays ? 110 - (cal / max) * 100 : 110;
-    return { x, y, cal };
-  });
-
-  const pathData = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
-
-  return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-base text-gray-800">Calorie Trend</h3>
-        <span className="text-[11px] text-gray-400 font-medium">7-day</span>
-      </div>
-
-      <div className="mb-2">
-        <span className="text-sm font-bold text-gray-700">
-          {target >= 1000 ? `${(target / 1000).toFixed(1)}k` : target} kcal
-        </span>
-      </div>
-
-      <div className="relative h-32">
-        <svg className="w-full h-full" viewBox="0 0 300 130" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2D9C7E" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#2D9C7E" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {validDays && (
-            <>
-              <path
-                d={`${pathData} L ${points[6].x} 120 L ${points[0].x} 120 Z`}
-                fill="url(#trendGradient)"
-              />
-              <path
-                d={pathData}
-                fill="none"
-                stroke="#2D9C7E"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {points.map((p, i) => (
-                <circle key={i} cx={p.x} cy={p.y} r="3" fill="#2D9C7E" />
-              ))}
-              <text x={points[6].x} y={points[6].y - 10} textAnchor="middle" fontSize="14" fill="#FFA726">
-                ⭐
-              </text>
-            </>
-          )}
-        </svg>
-      </div>
-
-      <div className="flex justify-between mt-1 px-1">
-        {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-          <span key={i} className="text-[10px] text-gray-400 font-medium">{day}</span>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -241,25 +142,20 @@ export default async function ProgressPage() {
     );
   }
 
-  const { profile, consumed, last7Days, weightPoints } = data;
+  const { logs, weightPoints, muscleMassPoints, bodyFatPoints, bmiPoints } = data;
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
       <div className="relative overflow-hidden bg-gradient-to-b from-[#C9A5E0] to-[#F5F9F7] px-5 pt-6 pb-[32vh]">
         <div className="absolute top-0 left-0 right-0 bottom-0 opacity-20" style={{ WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 80%)", maskImage: "linear-gradient(to bottom, black 40%, transparent 80%)" }}>
-          <svg viewBox="0 0 400 150" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+          <svg viewBox="0 0 200 150" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
             <circle cx="30" cy="120" r="60" fill="#E8D5F5" />
             <circle cx="50" cy="20" r="30" fill="#CE93D8" />
             <circle cx="120" cy="80" r="20" fill="#9C27B0" />
             <circle cx="80" cy="130" r="15" fill="#D4B8E8" />
             <circle cx="160" cy="30" r="25" fill="#E8D5F5" />
-            <circle cx="10" cy="60" r="12" fill="#9C27B0" />
-            <circle cx="90" cy="40" r="10" fill="#CE93D8" />
-            <circle cx="40" cy="80" r="8" fill="#D4B8E8" />
             <circle cx="140" cy="120" r="35" fill="#CE93D8" />
             <circle cx="70" cy="70" r="22" fill="#9C27B0" />
-            <circle cx="110" cy="10" r="18" fill="#CE93D8" />
-            <circle cx="-10" cy="30" r="40" fill="#E8D5F5" />
             <circle cx="180" cy="90" r="14" fill="#D4B8E8" />
           </svg>
         </div>
@@ -274,9 +170,6 @@ export default async function ProgressPage() {
               <Droplets size={14} className="text-blue-500" />
               <span className="text-xs font-bold text-gray-700">230</span>
             </div>
-            <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
-              <Calendar size={14} className="text-gray-600" />
-            </button>
             <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
               <Bell size={14} className="text-gray-600" />
             </div>
@@ -284,18 +177,39 @@ export default async function ProgressPage() {
 
           <div className="flex items-end justify-between">
             <div>
-              <h1 className="font-black text-2xl text-gray-800">Quest Progress</h1>
+              <h1 className="font-black text-2xl text-gray-800">Body Progress</h1>
               <p className="text-xs text-gray-600 mt-0.5">Track your transformation</p>
             </div>
-            <img src="/images/dino-workout.png" alt="Dino Workout" className="w-32 h-32 object-contain -mb-10" />
+            <img src="/images/dino-workout.png" alt="" className="w-32 h-32 object-contain -mb-10" />
           </div>
         </div>
       </div>
 
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
-        <WeightChart points={weightPoints} goal={profile.targetWeightKg} />
-        <MacroAdherence consumed={consumed} profile={profile} />
-        <CalorieTrend days={last7Days} target={profile.dailyCalTarget} />
+        {/* Charts */}
+        <TrendChart title="Weight" points={weightPoints} unit=" kg" color="#2D9C7E" icon={Weight} />
+        <TrendChart title="Muscle Mass" points={muscleMassPoints} unit=" kg" color="#F57C00" icon={Dumbbell} />
+        <TrendChart title="Body Fat" points={bodyFatPoints} unit="%" color="#EC4899" icon={Percent} />
+        <TrendChart title="BMI" points={bmiPoints} unit="" color="#7C3AED" icon={Calculator} />
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <Link
+            href="/scan/body-confirm"
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#2D9C7E] rounded-2xl text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
+          >
+            <Plus size={16} /> Log Manual
+          </Link>
+          <Link
+            href="/scan"
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#7C3AED] rounded-2xl text-sm font-bold text-white shadow-[0_4px_14px_rgba(124,58,237,0.3)] hover:bg-[#6D28D9] transition-colors"
+          >
+            <Camera size={16} /> Scan Scale
+          </Link>
+        </div>
+
+        {/* Log History */}
+        <LogList logs={logs} />
       </div>
 
       <BottomNav />

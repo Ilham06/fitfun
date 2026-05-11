@@ -90,18 +90,13 @@ model FoodLog {
 }
 
 model BodyMeasurement {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weightKg   Float?
-  waistCm    Float?
-  chestCm    Float?
-  hipsCm     Float?
-  armsCm     Float?
-  thighsCm   Float?
-  neckCm     Float?
-  bodyFatPct Float?
-  bmi        Float?
-  source     String
-  measuredAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weightKg      Float
+  muscleMassKg  Float?
+  bodyFatPct    Float?
+  bmi           Float?
+  source        String   @default("MANUAL")
+  measuredAt    DateTime @default(now())
 }

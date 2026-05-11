@@ -18,12 +18,16 @@ export async function POST(request) {
       messages: [
         {
           role: "system",
-          content: `You are a body measurement reader. Analyze the photo (tape measure, scale, or written notes) and extract all visible measurements.
+          content: `You are a smart scale / body composition reader. Analyze the photo of a scale display or body composition result and extract visible measurements.
 
 Return format:
-{ "weightKg": ..., "waistCm": ..., "chestCm": ..., "hipsCm": ..., "armsCm": ..., "thighsCm": ..., "neckCm": ..., "bodyFatPct": ... }
+{ "weightKg": ..., "muscleMassKg": ..., "bodyFatPct": ... }
 
-Return null for any field not visible in the photo. Return ONLY valid JSON, no markdown.`,
+Rules:
+- weightKg is REQUIRED (must be a number)
+- muscleMassKg: muscle mass in kg, null if not visible
+- bodyFatPct: body fat percentage, null if not visible
+- Return ONLY valid JSON, no markdown.`,
         },
         {
           role: "user",
@@ -34,11 +38,11 @@ Return null for any field not visible in the photo. Return ONLY valid JSON, no m
                 url: image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`,
               },
             },
-            { type: "text", text: "Extract body measurements from this photo." },
+            { type: "text", text: "Extract body measurements from this scale/device photo." },
           ],
         },
       ],
-      max_tokens: 500,
+      max_tokens: 300,
     });
 
     const content = response.choices[0]?.message?.content || "{}";

@@ -22,7 +22,11 @@ export async function POST(request) {
   if (error) return error;
 
   const body = await request.json();
-  const { weightKg, waistCm, chestCm, hipsCm, armsCm, thighsCm, neckCm, bodyFatPct, source } = body;
+  const { weightKg, muscleMassKg, bodyFatPct, source } = body;
+
+  if (!weightKg || weightKg <= 0) {
+    return errorResponse("Weight is required", "VALIDATION", 400);
+  }
 
   const profile = await prisma.userProfile.findUnique({
     where: { userId: session.user.id },
@@ -30,32 +34,25 @@ export async function POST(request) {
   });
 
   let bmi = null;
-  if (weightKg && profile?.heightCm) {
+  if (profile?.heightCm) {
     bmi = Math.round((weightKg / Math.pow(profile.heightCm / 100, 2)) * 10) / 10;
   }
 
   const measurement = await prisma.bodyMeasurement.create({
     data: {
       userId: session.user.id,
-      weightKg: weightKg || null,
-      waistCm: waistCm || null,
-      chestCm: chestCm || null,
-      hipsCm: hipsCm || null,
-      armsCm: armsCm || null,
-      thighsCm: thighsCm || null,
-      neckCm: neckCm || null,
+      weightKg,
+      muscleMassKg: muscleMassKg || null,
       bodyFatPct: bodyFatPct || null,
       bmi,
       source: source || "MANUAL",
     },
   });
 
-  if (weightKg) {
-    await prisma.userProfile.update({
-      where: { userId: session.user.id },
-      data: { weightKg },
-    });
-  }
+  await prisma.userProfile.update({
+    where: { userId: session.user.id },
+    data: { weightKg },
+  });
 
   return successResponse({ measurement }, 201);
 }
