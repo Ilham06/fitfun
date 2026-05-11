@@ -1,5 +1,6 @@
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import NotificationPrompt from "@/components/notification-prompt";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -22,7 +23,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        <NotificationPrompt />
+        {children}
+      </body>
     </html>
   );
 }

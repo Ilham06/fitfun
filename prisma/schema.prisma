@@ -39,6 +39,7 @@ model User {
   foodLogs       FoodLog[]
   meals          Meal[]
   bodyLogs       BodyMeasurement[]
+  fcmTokens      FcmToken[]
 }
 
 model UserProfile {
@@ -87,6 +88,14 @@ model FoodLog {
   portionMultiplier Float    @default(1.0)
   source            String
   loggedAt          DateTime @default(now())
+}
+
+model FcmToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  createdAt DateTime @default(now())
 }
 
 model BodyMeasurement {
