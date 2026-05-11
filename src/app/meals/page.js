@@ -174,47 +174,43 @@ function WaterCard({ lang }) {
 }
 
 function MealsList({ meals, lang }) {
-  if (meals.length === 0) {
-    return (
-      <div className="bg-gradient-to-br from-[#2E1065] to-[#4C1D95] rounded-3xl p-5 shadow-lg">
-        <h3 className="font-bold text-sm text-white mb-3">{t(lang, "todays_quest")}</h3>
-        <p className="text-xs text-white/60 text-center py-4">{t(lang, "no_meals_logged")}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-gradient-to-br from-[#2E1065] to-[#4C1D95] rounded-3xl p-5 shadow-lg relative overflow-hidden">
       <div className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/5" />
       <img src="/images/cat-cook.png" alt="Cat Cook" className="absolute right-0 bottom-0 w-24 h-24 object-contain opacity-80" />
 
       <h3 className="font-bold text-sm text-white mb-4">{t(lang, "todays_quest")}</h3>
-      <div className="flex flex-col gap-3 relative z-10">
-        {meals.map((meal) => {
-          const time = new Date(meal.loggedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-          const itemNames = meal.items.map((i) => i.name).join(", ");
-          return (
-            <div key={meal.id} className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-sm flex-shrink-0 mt-0.5">
-                <UtensilsCrossed size={14} className="text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs text-white">
-                    {meal.mealType.charAt(0) + meal.mealType.slice(1).toLowerCase()}
-                  </span>
-                  <span className="text-[10px] text-[#2D9C7E] font-medium">{time}</span>
+
+      {meals.length === 0 ? (
+        <p className="text-xs text-white/60 text-center py-4 relative z-10">{t(lang, "no_meals_logged")}</p>
+      ) : (
+        <div className="flex flex-col gap-3 relative z-10">
+          {meals.map((meal) => {
+            const time = new Date(meal.loggedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+            const itemNames = meal.items.map((i) => i.name).join(", ");
+            return (
+              <div key={meal.id} className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-sm flex-shrink-0 mt-0.5">
+                  <UtensilsCrossed size={14} className="text-white" />
                 </div>
-                <p className="text-[11px] text-white/70 mt-0.5 truncate">{itemNames}</p>
-                <span className="text-[10px] text-white/50">
-                  {meal.totalCalories} kcal · {Math.round(meal.totalProtein)}g P
-                  {meal.items.length > 1 && ` · ${meal.items.length} items`}
-                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-xs text-white">
+                      {meal.mealType.charAt(0) + meal.mealType.slice(1).toLowerCase()}
+                    </span>
+                    <span className="text-[10px] text-[#2D9C7E] font-medium">{time}</span>
+                  </div>
+                  <p className="text-[11px] text-white/70 mt-0.5 truncate">{itemNames}</p>
+                  <span className="text-[10px] text-white/50">
+                    {meal.totalCalories} kcal · {Math.round(meal.totalProtein)}g P
+                    {meal.items.length > 1 && ` · ${meal.items.length} items`}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       <Link
         href="/meals/add"
@@ -284,7 +280,7 @@ export default async function MealsPage() {
               <h1 className="font-black text-2xl text-white">{t(lang, "daily_plan")}</h1>
               <p className="text-xs text-white/60 mt-0.5">{t(lang, "level_up_day")}</p>
             </div>
-            <img src="/images/cat-cook.png" alt="Cat Cook" className="w-32 h-32 object-contain -mb-1 -mb-10" />
+            <img src="/images/cat-cook.png" alt="Cat Cook" className="w-32 h-32 object-contain -mb-10" />
           </div>
         </div>
       </div>

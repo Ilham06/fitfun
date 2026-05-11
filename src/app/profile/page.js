@@ -1,3 +1,4 @@
+import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
 import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Flame, Droplets, Award, Globe } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
@@ -126,23 +127,22 @@ function MacroTargets({ profile, lang }) {
 }
 
 function SettingsList({ lang }) {
-  const items = [
-    { icon: Pencil, label: t(lang, "edit_profile"), desc: t(lang, "edit_profile_desc") },
-    { icon: Target, label: t(lang, "change_program"), desc: t(lang, "change_program_desc") },
-    { icon: Bell, label: t(lang, "notifications"), desc: t(lang, "notifications_desc") },
-    { icon: Download, label: t(lang, "export_data"), desc: t(lang, "export_data_desc") },
+  const linkedItems = [
+    { icon: Pencil, label: t(lang, "edit_profile"), desc: t(lang, "edit_profile_desc"), href: "/profile/edit" },
+    { icon: Target, label: t(lang, "change_program"), desc: t(lang, "change_program_desc"), href: "/profile/program" },
+    { icon: Bell, label: t(lang, "notifications"), desc: t(lang, "notifications_desc"), href: "/profile/notifications" },
   ];
 
   return (
     <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-[#F0F0F0]">
       <LanguageSwitcher />
-      {items.map((item, i) => {
+      {linkedItems.map((item, i) => {
         const Icon = item.icon;
         return (
-          <button
+          <Link
             key={item.label}
-            className={`w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-[#F8F9FA] transition-colors ${i < items.length - 1 ? "border-b border-[#F0F0F0]" : ""
-              }`}
+            href={item.href}
+            className={`flex items-center gap-3 px-5 py-4 hover:bg-[#F8F9FA] transition-colors border-b border-[#F0F0F0]`}
           >
             <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] flex items-center justify-center">
               <Icon size={16} className="text-gray-400" />
@@ -152,9 +152,21 @@ function SettingsList({ lang }) {
               <div className="text-[11px] text-gray-400">{item.desc}</div>
             </div>
             <ChevronRight size={16} className="text-gray-300" />
-          </button>
+          </Link>
         );
       })}
+      <div className="flex items-center gap-3 px-5 py-4 opacity-60">
+        <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] flex items-center justify-center">
+          <Download size={16} className="text-gray-400" />
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-semibold text-gray-800">{t(lang, "export_data")}</div>
+          <div className="text-[11px] text-gray-400">{t(lang, "export_data_desc")}</div>
+        </div>
+        <span className="text-[10px] font-bold text-[#F59E0B] bg-[#FFF8E1] px-2.5 py-1 rounded-full border border-[#FDE68A]">
+          {t(lang, "coming_soon")}
+        </span>
+      </div>
     </div>
   );
 }

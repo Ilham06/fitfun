@@ -3,8 +3,6 @@ import BottomNav from "@/components/bottom-nav";
 import { Flame, Droplets, Bell, Bot, Target, Zap, Weight, Ruler, UtensilsCrossed } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getLang } from "@/lib/get-lang";
-import { t, getActivityLabel } from "@/lib/i18n";
 
 export const metadata = { title: "Home | FitScan" };
 
@@ -73,38 +71,30 @@ async function getDashboardData(userId) {
   return { profile, consumed, meals: combinedMeals };
 }
 
-function HeroBanner({ name, streak, profile, lang }) {
+function HeroBanner({ name, streak, profile }) {
   const hour = new Date().getHours();
 
-  let greeting = t(lang, "greeting_evening");
+  let greeting = "Good evening";
   let bgImage = "/bg/header-bg-night.png";
-  let textColor = "text-white";
 
   if (hour >= 5 && hour < 12) {
-    greeting = t(lang, "greeting_morning");
+    greeting = "Good morning";
     bgImage = "/bg/header-bg-morning.png";
-    textColor = "text-black";
-  } else if (hour >= 12 && hour < 15) {
-    greeting = t(lang, "greeting_afternoon");
-    bgImage = "/bg/header-bg-day.png";
-    textColor = "text-black";
-  } else if (hour >= 15 && hour < 18) {
-    greeting = t(lang, "greeting_afternoon");
+  } else if (hour >= 12 && hour < 18) {
+    greeting = "Good afternoon";
     bgImage = "/bg/header-bg-afternoon.png";
-    textColor = "text-black";
-  } else {
-    greeting = t(lang, "greeting_evening");
-    bgImage = "/bg/header-bg-night.png";
-    textColor = "text-white";
   }
 
   return (
-    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[250px]">
+    <div className="relative overflow-hidden rounded-b-[32px] bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[164px]">
       <img
         src={bgImage}
         alt=""
         className="absolute bottom-0 left-0 right-0 w-full object-contain object-bottom pointer-events-none h-auto"
       />
+
+      {/* Dark gradient on left so white text stays readable over any bg image */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-transparent rounded-b-[32px]" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-end gap-2 mb-4">
@@ -123,15 +113,15 @@ function HeroBanner({ name, streak, profile, lang }) {
 
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-gray-100 shadow-lg flex items-center justify-center border-4 border-white overflow-hidden">
-            <img 
-              src={profile?.gender?.toLowerCase() === 'female' ? '/images/woman-avatar.png' : '/images/men-avatar.png'} 
-              alt="Avatar" 
-              className="w-full h-full object-cover" 
+            <img
+              src={profile?.gender?.toLowerCase() === "female" ? "/images/woman-avatar.png" : "/images/men-avatar.png"}
+              alt="Avatar"
+              className="w-full h-full object-cover"
             />
           </div>
           <div className="flex-1">
-            <p className={`${textColor} text-xs font-medium`}>{greeting},</p>
-            <h1 className={`font-black text-xl ${textColor} drop-shadow-sm`}>
+            <p className="text-white/80 text-xs font-medium drop-shadow">{greeting},</p>
+            <h1 className="font-black text-xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
               {name || "FitWarrior"} 💪
             </h1>
             <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-bold text-white backdrop-blur-sm">
@@ -144,16 +134,16 @@ function HeroBanner({ name, streak, profile, lang }) {
   );
 }
 
-function QuestCard({ consumed, profile, lang }) {
+function QuestCard({ consumed, profile }) {
   const remaining = Math.max(profile.dailyCalTarget - consumed.calories, 0);
   const calPct = Math.min(Math.round((consumed.calories / profile.dailyCalTarget) * 100), 100);
   const circumference = 2 * Math.PI * 46;
   const strokeOffset = circumference - (calPct / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] mx-5 -mt-24 relative z-20">
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] mx-5 -mt-4 relative z-20">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-sm text-gray-800">{t(lang, "todays_quest")}</h3>
+        <h3 className="font-bold text-sm text-gray-800">Today&apos;s Quest</h3>
         <span className="text-xs font-bold text-[#2D9C7E] bg-[#E8F5F0] px-2.5 py-1 rounded-full">
           {calPct}%
         </span>
@@ -180,29 +170,29 @@ function QuestCard({ consumed, profile, lang }) {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="font-black text-xl text-gray-800 leading-none">{remaining.toLocaleString()}</span>
-            <span className="text-[10px] text-gray-400 mt-0.5 font-medium">{t(lang, "kcal_left")}</span>
+            <span className="text-[10px] text-gray-400 mt-0.5 font-medium">kcal left</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-2.5 flex-1">
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-[#C0392B]" />
-            <span className="text-gray-500">{t(lang, "protein")}</span>
+            <span className="text-gray-500">Protein</span>
             <span className="font-bold text-gray-700 ml-auto">{Math.round(consumed.protein)} / {profile.proteinTargetG}g</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-[#2471A3]" />
-            <span className="text-gray-500">{t(lang, "carbs")}</span>
+            <span className="text-gray-500">Carbs</span>
             <span className="font-bold text-gray-700 ml-auto">{Math.round(consumed.carbs)} / {profile.carbTargetG}g</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-[#D4882A]" />
-            <span className="text-gray-500">{t(lang, "fat")}</span>
+            <span className="text-gray-500">Fat</span>
             <span className="font-bold text-gray-700 ml-auto">{Math.round(consumed.fat)} / {profile.fatTargetG}g</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-[#2D9C7E]" />
-            <span className="text-[#2D9C7E] font-semibold">{t(lang, "calories_left")}</span>
+            <span className="text-[#2D9C7E] font-semibold">Calories left</span>
           </div>
         </div>
       </div>
@@ -210,7 +200,7 @@ function QuestCard({ consumed, profile, lang }) {
   );
 }
 
-function AiTipCard({ profile, consumed, lang }) {
+function AiTipCard({ profile, consumed }) {
   const proteinLeft = profile.proteinTargetG - Math.round(consumed.protein);
   const target = profile.dailyCalTarget >= 1000
     ? `${(profile.dailyCalTarget / 1000).toFixed(1)}k`
@@ -223,15 +213,16 @@ function AiTipCard({ profile, consumed, lang }) {
           <img src="/images/ai.png" alt="AI" className="w-full h-full object-contain object-top" />
         </div>
         <div className="flex-1">
-          <span className="font-bold text-xs text-[#E9D5FF] mb-1 block">{t(lang, "ai_tip")}</span>
+          <span className="font-bold text-xs text-[#E9D5FF] mb-1 block">AI Tip</span>
           <p className="text-[12px] text-white/90 leading-relaxed">
-            {profile.program.toLowerCase()} — target {target} kcal.
+            You&apos;re <span className="font-bold">{profile.program.toLowerCase()}</span> — target {target} kcal.
             {proteinLeft > 0 && (
               <>
-                <br />{t(lang, "ai_tip_short_protein", { amount: proteinLeft })}
+                <br />You&apos;re {proteinLeft}g short on protein.
+                <br />A post-workout shake + Greek yogurt would close the gap.
               </>
             )}
-            {proteinLeft <= 0 && ` ${t(lang, "ai_tip_protein_done")}`}
+            {proteinLeft <= 0 && " Great job hitting your protein target today!"}
           </p>
         </div>
       </div>
@@ -239,12 +230,19 @@ function AiTipCard({ profile, consumed, lang }) {
   );
 }
 
-function StatsCards({ profile, lang }) {
+const ACTIVITY_LABELS = {
+  sedentary: "Sedentary",
+  lightly_active: "Light",
+  moderately_active: "Moderate",
+  very_active: "Very Active",
+};
+
+function StatsCards({ profile }) {
   const stats = [
-    { icon: Target, label: t(lang, "program"), value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase(), color: "text-[#2D9C7E]", bg: "bg-[#E8F5F0]" },
-    { icon: Zap, label: t(lang, "activity"), value: getActivityLabel(lang, profile.activityLevel), color: "text-[#F59E0B]", bg: "bg-[#FFF8E1]" },
-    { icon: Weight, label: t(lang, "weight"), value: `${profile.weightKg} kg`, color: "text-[#7C3AED]", bg: "bg-[#F3E8FF]" },
-    { icon: Ruler, label: t(lang, "height"), value: `${profile.heightCm} cm`, color: "text-[#EC4899]", bg: "bg-[#FCE7F3]" },
+    { icon: Target, label: "Program", value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase(), color: "text-[#2D9C7E]", bg: "bg-[#E8F5F0]" },
+    { icon: Zap, label: "Activity", value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel, color: "text-[#F59E0B]", bg: "bg-[#FFF8E1]" },
+    { icon: Weight, label: "Weight", value: `${profile.weightKg} kg`, color: "text-[#7C3AED]", bg: "bg-[#F3E8FF]" },
+    { icon: Ruler, label: "Height", value: `${profile.heightCm} cm`, color: "text-[#EC4899]", bg: "bg-[#FCE7F3]" },
   ];
 
   return (
@@ -274,13 +272,13 @@ const MEAL_COLORS = {
   SNACK: { bg: "bg-gradient-to-br from-[#E3F2FD] to-[#BBDEFB]", icon: "text-[#1976D2]" },
 };
 
-function TodaysMeal({ meals, lang }) {
+function TodaysMeal({ meals }) {
   if (meals.length === 0) {
     return (
       <div className="mx-5 bg-[#F0FDF4] rounded-3xl p-5 shadow-sm border border-[#BBF7D0] relative overflow-hidden">
         <img src="/images/meals.png" alt="Meals" className="absolute -right-2 top-1/2 -translate-y-1/2 w-24 h-24 object-contain opacity-80 -mt-5" />
-        <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">{t(lang, "todays_meal")}</h3>
-        <p className="text-xs text-gray-500 text-left py-4 relative z-10 w-[70%]">{t(lang, "no_meals_yet")}</p>
+        <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">Today&apos;s Meal</h3>
+        <p className="text-xs text-gray-500 text-left py-4 relative z-10 w-[70%]">No meals logged yet. Scan or add a meal to start your quest!</p>
       </div>
     );
   }
@@ -289,7 +287,7 @@ function TodaysMeal({ meals, lang }) {
     <div className="mx-5 bg-[#F0FDF4] rounded-3xl p-5 shadow-sm border border-[#BBF7D0] relative overflow-hidden">
       <img src="/images/meals.png" alt="Meals" className="absolute top-2 right-2 w-16 h-16 object-contain opacity-90" />
 
-      <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">{t(lang, "todays_meal")}</h3>
+      <h3 className="font-bold text-sm text-gray-800 mb-3 relative z-10">Today&apos;s Meal</h3>
 
       <div className="flex flex-col gap-2.5 relative z-10">
         {meals.slice(-3).map((meal) => {
@@ -318,7 +316,6 @@ function TodaysMeal({ meals, lang }) {
 export default async function DashboardPage() {
   console.log("[DASHBOARD] Start rendering...");
   const session = await auth();
-  const lang = await getLang();
   console.log("[DASHBOARD] Session:", JSON.stringify(session?.user || null));
 
   if (!session?.user?.id) {
@@ -339,13 +336,13 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
-      <HeroBanner name={session.user.name?.split(" ")[0]} streak={0} profile={profile} lang={lang} />
-      <QuestCard consumed={consumed} profile={profile} lang={lang} />
+      <HeroBanner name={session.user.name?.split(" ")[0]} streak={0} profile={profile} />
+      <QuestCard consumed={consumed} profile={profile} />
 
       <div className="flex flex-col gap-4 mt-4">
-        <AiTipCard profile={profile} consumed={consumed} lang={lang} />
-        <StatsCards profile={profile} lang={lang} />
-        <TodaysMeal meals={meals} lang={lang} />
+        <AiTipCard profile={profile} consumed={consumed} />
+        <StatsCards profile={profile} />
+        <TodaysMeal meals={meals} />
       </div>
 
       <BottomNav />
