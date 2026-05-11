@@ -1,10 +1,11 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Flame, Droplets, Bell, Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
+import { Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import HeaderStats from "@/components/header-stats";
 
 export const metadata = { title: "Body Progress | FitScan" };
 
@@ -197,18 +198,8 @@ export default async function ProgressPage() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2">
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Flame size={14} className="text-orange-500" />
-              <span className="text-xs font-bold text-gray-700">12</span>
-            </div>
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Droplets size={14} className="text-blue-500" />
-              <span className="text-xs font-bold text-gray-700">230</span>
-            </div>
-            <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
-              <Bell size={14} className="text-gray-600" />
-            </div>
+          <div className="flex justify-end">
+            <HeaderStats userId={session.user.id} />
           </div>
 
           <div className="flex items-end justify-between">

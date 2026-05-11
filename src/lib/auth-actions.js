@@ -38,6 +38,7 @@ export async function completeOnboarding(profileData) {
   const { dailyCalTarget, proteinTargetG, carbTargetG, fatTargetG } = calculateTargets({
     tdee,
     program,
+    weightKg,
   });
 
   await prisma.$transaction([

@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import BottomNav from "@/components/bottom-nav";
-import { Flame, Droplets, Bell, Bot, Target, Zap, Weight, Ruler, UtensilsCrossed } from "lucide-react";
+import { Target, Zap, Weight, Ruler, UtensilsCrossed } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getLevelInfo } from "@/lib/xp";
+import HeaderStats from "@/components/header-stats";
+import AiTipCard from "@/components/ai-tip-card";
 
 export const metadata = { title: "Home | FitScan" };
 
@@ -71,7 +74,7 @@ async function getDashboardData(userId) {
   return { profile, consumed, meals: combinedMeals };
 }
 
-function HeroBanner({ name, streak, profile }) {
+function HeroBanner({ name, userId, profile, level }) {
   const hour = new Date().getHours();
 
   let greeting = "Good evening";
@@ -97,18 +100,8 @@ function HeroBanner({ name, streak, profile }) {
       <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-transparent rounded-b-[32px]" />
 
       <div className="relative z-10">
-        <div className="flex items-center justify-end gap-2 mb-4">
-          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-            <Flame size={14} className="text-orange-500" />
-            <span className="text-xs font-bold text-gray-700">{streak}</span>
-          </div>
-          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-            <Droplets size={14} className="text-blue-500" />
-            <span className="text-xs font-bold text-gray-700">0</span>
-          </div>
-          <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
-            <Bell size={14} className="text-gray-600" />
-          </div>
+        <div className="flex justify-end mb-4">
+          <HeaderStats userId={userId} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -125,7 +118,7 @@ function HeroBanner({ name, streak, profile }) {
               {name || "FitWarrior"} 💪
             </h1>
             <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-bold text-white backdrop-blur-sm">
-              Lv. 1
+              Lv. {level}
             </span>
           </div>
         </div>
@@ -200,35 +193,6 @@ function QuestCard({ consumed, profile }) {
   );
 }
 
-function AiTipCard({ profile, consumed }) {
-  const proteinLeft = profile.proteinTargetG - Math.round(consumed.protein);
-  const target = profile.dailyCalTarget >= 1000
-    ? `${(profile.dailyCalTarget / 1000).toFixed(1)}k`
-    : profile.dailyCalTarget;
-
-  return (
-    <div className="mx-5 bg-[#5B21B6] rounded-3xl p-4 shadow-md">
-      <div className="flex items-stretch gap-3">
-        <div className="flex-shrink-0 w-16">
-          <img src="/images/ai.png" alt="AI" className="w-full h-full object-contain object-top" />
-        </div>
-        <div className="flex-1">
-          <span className="font-bold text-xs text-[#E9D5FF] mb-1 block">AI Tip</span>
-          <p className="text-[12px] text-white/90 leading-relaxed">
-            You&apos;re <span className="font-bold">{profile.program.toLowerCase()}</span> — target {target} kcal.
-            {proteinLeft > 0 && (
-              <>
-                <br />You&apos;re {proteinLeft}g short on protein.
-                <br />A post-workout shake + Greek yogurt would close the gap.
-              </>
-            )}
-            {proteinLeft <= 0 && " Great job hitting your protein target today!"}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 const ACTIVITY_LABELS = {
   sedentary: "Sedentary",
@@ -333,14 +297,15 @@ export default async function DashboardPage() {
   }
 
   const { profile, consumed, meals } = data;
+  const { level } = getLevelInfo(profile.xp ?? 0);
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
-      <HeroBanner name={session.user.name?.split(" ")[0]} streak={0} profile={profile} />
+      <HeroBanner name={session.user.name?.split(" ")[0]} userId={session.user.id} profile={profile} level={level} />
       <QuestCard consumed={consumed} profile={profile} />
 
       <div className="flex flex-col gap-4 mt-4">
-        <AiTipCard profile={profile} consumed={consumed} />
+        <AiTipCard />
         <StatsCards profile={profile} />
         <TodaysMeal meals={meals} />
       </div>

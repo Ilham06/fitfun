@@ -23,13 +23,14 @@ export function calculateTDEE({ age, gender, weightKg, heightCm, activityLevel }
   return Math.round(bmr * multiplier);
 }
 
-export function calculateTargets({ tdee, program }) {
+export function calculateTargets({ tdee, program, weightKg }) {
   const modifier = PROGRAM_MODIFIERS[program] || 1.0;
   const dailyCalTarget = Math.round(tdee * modifier);
 
-  const proteinTargetG = Math.round((dailyCalTarget * 0.3) / 4);
-  const carbTargetG = Math.round((dailyCalTarget * 0.45) / 4);
-  const fatTargetG = Math.round((dailyCalTarget * 0.25) / 9);
+  const proteinTargetG = Math.round(weightKg * 2);
+  const fatTargetG = Math.round(weightKg * 1);
+  const remaining = dailyCalTarget - proteinTargetG * 4 - fatTargetG * 9;
+  const carbTargetG = Math.round(Math.max(remaining, 0) / 4);
 
   return { dailyCalTarget, proteinTargetG, carbTargetG, fatTargetG };
 }

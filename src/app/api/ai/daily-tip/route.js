@@ -13,8 +13,18 @@ export async function POST() {
     return errorResponse("Profile not found", "NOT_FOUND", 404);
   }
 
+  // Return cached if generated today
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
+
+  if (profile.aiCachedAt && profile.aiCachedAt >= todayStart && profile.aiTip) {
+    return successResponse({
+      tip: profile.aiTip,
+      suggestions: profile.aiSuggestions || [],
+      cached: true,
+    });
+  }
+
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999);
 
@@ -69,17 +79,21 @@ Meals logged today: ${todayLogs.map((l) => l.name).join(", ") || "none"}.`,
     const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const result = JSON.parse(cleaned);
 
-    return successResponse({
-      tip: result.tip || "Keep tracking your meals to stay on target!",
-      suggestions: result.suggestions || [],
-      cachedAt: new Date().toISOString(),
+    const tip = result.tip || "Keep tracking your meals to stay on target!";
+    const suggestions = result.suggestions || [];
+
+    await prisma.userProfile.update({
+      where: { userId },
+      data: { aiTip: tip, aiSuggestions: suggestions, aiCachedAt: new Date() },
     });
+
+    return successResponse({ tip, suggestions, cached: false });
   } catch (e) {
     console.error("Daily tip error:", e);
     return successResponse({
       tip: "Keep tracking your meals consistently to reach your goals!",
       suggestions: [],
-      cachedAt: new Date().toISOString(),
+      cached: false,
     });
   }
 }

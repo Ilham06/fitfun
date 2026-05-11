@@ -1,10 +1,12 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Flame, Droplets, Bell, Sparkles, ChevronRight, UtensilsCrossed, Plus } from "lucide-react";
+import { Droplets, UtensilsCrossed, Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import HeaderStats from "@/components/header-stats";
+import AiRecommendation from "@/components/ai-recommendation";
 
 export const metadata = { title: "Daily Plan | FitScan" };
 
@@ -128,33 +130,6 @@ function TodaysNutrition({ consumed, profile, lang }) {
   );
 }
 
-function AiRecommendation({ lang }) {
-  const suggestions = [
-    { text: "Lunch suggestion: Chicken rice bowl · 580 kcal · 42gP", emoji: "🍛" },
-    { text: "Dinner suggestion: Salmon + sweet potato · 640 kcal · 48gP", emoji: "🍣" },
-  ];
-
-  return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles size={16} className="text-[#2D9C7E]" />
-        <h3 className="font-bold text-sm text-gray-800">{t(lang, "ai_recommendations")}</h3>
-      </div>
-      <div className="flex flex-col gap-2">
-        {suggestions.map((s, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 p-3 bg-[#F8F9FA] rounded-2xl"
-          >
-            <span className="text-lg">{s.emoji}</span>
-            <span className="text-[11px] text-gray-600 flex-1 font-medium">{s.text}</span>
-            <ChevronRight size={14} className="text-gray-300" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function WaterCard({ lang }) {
   return (
@@ -261,18 +236,8 @@ export default async function MealsPage() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2">
-            <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1.5">
-              <Flame size={14} className="text-orange-400" />
-              <span className="text-xs font-bold text-white">12</span>
-            </div>
-            <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1.5">
-              <Droplets size={14} className="text-blue-300" />
-              <span className="text-xs font-bold text-white">230</span>
-            </div>
-            <div className="w-8 h-8 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center">
-              <Bell size={14} className="text-white" />
-            </div>
+          <div className="flex justify-end">
+            <HeaderStats userId={session.user.id} dark />
           </div>
 
           <div className="flex items-end justify-between">
@@ -288,6 +253,7 @@ export default async function MealsPage() {
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         <TodaysNutrition consumed={consumed} profile={profile} lang={lang} />
         <AiRecommendation lang={lang} />
+
         <WaterCard lang={lang} />
         <MealsList meals={meals} lang={lang} />
       </div>

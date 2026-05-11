@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getSessionOrThrow, errorResponse, successResponse } from "@/lib/utils";
+import { awardXP, XP_AWARDS } from "@/lib/xp";
 
 export async function GET(request) {
   const { session, error } = await getSessionOrThrow();
@@ -75,5 +76,8 @@ export async function POST(request) {
     },
   });
 
-  return successResponse({ meal }, 201);
+  const isScan = items[0]?.source && items[0].source !== "MANUAL";
+  const xpResult = await awardXP(session.user.id, isScan ? XP_AWARDS.MEAL_SCAN : XP_AWARDS.MEAL_MANUAL);
+
+  return successResponse({ meal, xp: xpResult }, 201);
 }
