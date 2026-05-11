@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Bell, X } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 export default function NotificationPrompt() {
   const [showBanner, setShowBanner] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,10 +88,10 @@ export default function NotificationPrompt() {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm text-gray-900">
-          Aktifkan Notifikasi
+          {t("notif_title")}
         </p>
         <p className="text-xs text-gray-500 mt-0.5">
-          Dapatkan pengingat nutrisi harian dan tracking progress kamu
+          {t("notif_desc")}
         </p>
         <div className="flex gap-2 mt-3">
           <button
@@ -97,13 +99,13 @@ export default function NotificationPrompt() {
             disabled={registering}
             className="px-4 py-1.5 bg-[#2D9C7E] text-white text-xs font-semibold rounded-full"
           >
-            {registering ? "Loading..." : "Izinkan"}
+            {registering ? t("loading") : t("allow")}
           </button>
           <button
             onClick={handleDismiss}
             className="px-4 py-1.5 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full"
           >
-            Nanti
+            {t("later")}
           </button>
         </div>
       </div>

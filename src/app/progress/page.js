@@ -3,6 +3,8 @@ import BottomNav from "@/components/bottom-nav";
 import { Flame, Droplets, Bell, Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const metadata = { title: "Body Progress | FitScan" };
 
@@ -81,18 +83,18 @@ function TrendChart({ title, points, unit, color, icon: Icon }) {
   );
 }
 
-function LogList({ logs }) {
+function LogList({ logs, lang }) {
   if (logs.length === 0) {
     return (
       <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-        <p className="text-xs text-gray-400 text-center py-4">No measurements logged yet.</p>
+        <p className="text-xs text-gray-400 text-center py-4">{t(lang, "no_measurements")}</p>
       </div>
     );
   }
 
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <h3 className="font-bold text-sm text-gray-800 mb-4">History</h3>
+      <h3 className="font-bold text-sm text-gray-800 mb-4">{t(lang, "history")}</h3>
       <div className="flex flex-col gap-3">
         {logs.slice(0, 10).map((log) => {
           const date = new Date(log.measuredAt);
@@ -132,12 +134,13 @@ function LogList({ logs }) {
 
 export default async function ProgressPage() {
   const session = await auth();
+  const lang = await getLang();
   const data = session?.user?.id ? await getProgressData(session.user.id) : null;
 
   if (!data) {
     return (
       <div className="min-h-screen bg-[#F5F9F7] flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+        <p className="text-gray-400">{t(lang, "loading")}</p>
       </div>
     );
   }
@@ -177,8 +180,8 @@ export default async function ProgressPage() {
 
           <div className="flex items-end justify-between">
             <div>
-              <h1 className="font-black text-2xl text-gray-800">Body Progress</h1>
-              <p className="text-xs text-gray-600 mt-0.5">Track your transformation</p>
+              <h1 className="font-black text-2xl text-gray-800">{t(lang, "body_progress")}</h1>
+              <p className="text-xs text-gray-600 mt-0.5">{t(lang, "track_transformation")}</p>
             </div>
             <img src="/images/dino-workout.png" alt="" className="w-32 h-32 object-contain -mb-10" />
           </div>
@@ -187,9 +190,9 @@ export default async function ProgressPage() {
 
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         {/* Charts */}
-        <TrendChart title="Weight" points={weightPoints} unit=" kg" color="#2D9C7E" icon={Weight} />
-        <TrendChart title="Muscle Mass" points={muscleMassPoints} unit=" kg" color="#F57C00" icon={Dumbbell} />
-        <TrendChart title="Body Fat" points={bodyFatPoints} unit="%" color="#EC4899" icon={Percent} />
+        <TrendChart title={t(lang, "weight")} points={weightPoints} unit=" kg" color="#2D9C7E" icon={Weight} />
+        <TrendChart title={t(lang, "muscle_mass")} points={muscleMassPoints} unit=" kg" color="#F57C00" icon={Dumbbell} />
+        <TrendChart title={t(lang, "body_fat")} points={bodyFatPoints} unit="%" color="#EC4899" icon={Percent} />
         <TrendChart title="BMI" points={bmiPoints} unit="" color="#7C3AED" icon={Calculator} />
 
         {/* Action Buttons */}
@@ -198,18 +201,18 @@ export default async function ProgressPage() {
             href="/scan/body-confirm"
             className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#2D9C7E] rounded-2xl text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
           >
-            <Plus size={16} /> Log Manual
+            <Plus size={16} /> {t(lang, "log_manual")}
           </Link>
           <Link
             href="/scan"
             className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#7C3AED] rounded-2xl text-sm font-bold text-white shadow-[0_4px_14px_rgba(124,58,237,0.3)] hover:bg-[#6D28D9] transition-colors"
           >
-            <Camera size={16} /> Scan Scale
+            <Camera size={16} /> {t(lang, "scan_scale")}
           </Link>
         </div>
 
         {/* Log History */}
-        <LogList logs={logs} />
+        <LogList logs={logs} lang={lang} />
       </div>
 
       <BottomNav />

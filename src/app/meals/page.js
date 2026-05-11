@@ -3,6 +3,8 @@ import BottomNav from "@/components/bottom-nav";
 import { Flame, Droplets, Bell, Sparkles, ChevronRight, UtensilsCrossed, Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const metadata = { title: "Daily Plan | FitScan" };
 
@@ -90,7 +92,7 @@ function NutritionCircle({ label, current, target, percentage, color, unit }) {
   );
 }
 
-function TodaysNutrition({ consumed, profile }) {
+function TodaysNutrition({ consumed, profile, lang }) {
   const proteinPct = Math.round((consumed.protein / profile.proteinTargetG) * 100);
   const carbsPct = Math.round((consumed.carbs / profile.carbTargetG) * 100);
   const fatPct = Math.round((consumed.fat / profile.fatTargetG) * 100);
@@ -98,11 +100,11 @@ function TodaysNutrition({ consumed, profile }) {
 
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <h3 className="font-bold text-sm text-gray-800 mb-4">Today&apos;s Nutrition</h3>
+      <h3 className="font-bold text-sm text-gray-800 mb-4">{t(lang, "todays_nutrition")}</h3>
       <div className="flex items-center justify-between">
-        <NutritionCircle label="Protein" current={Math.round(consumed.protein)} target={`${profile.proteinTargetG}`} unit="g" percentage={proteinPct} color="#EF5350" />
-        <NutritionCircle label="Carbs" current={Math.round(consumed.carbs)} target={`${profile.carbTargetG}`} unit="g" percentage={carbsPct} color="#42A5F5" />
-        <NutritionCircle label="Fat" current={Math.round(consumed.fat)} target={`${profile.fatTargetG}`} unit="g" percentage={fatPct} color="#FFA726" />
+        <NutritionCircle label={t(lang, "protein")} current={Math.round(consumed.protein)} target={`${profile.proteinTargetG}`} unit="g" percentage={proteinPct} color="#EF5350" />
+        <NutritionCircle label={t(lang, "carbs")} current={Math.round(consumed.carbs)} target={`${profile.carbTargetG}`} unit="g" percentage={carbsPct} color="#42A5F5" />
+        <NutritionCircle label={t(lang, "fat")} current={Math.round(consumed.fat)} target={`${profile.fatTargetG}`} unit="g" percentage={fatPct} color="#FFA726" />
         <div className="flex flex-col items-center">
           <div className="relative w-[58px] h-[58px]">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 58 58">
@@ -118,15 +120,15 @@ function TodaysNutrition({ consumed, profile }) {
               <span className="font-bold text-[9px] text-gray-700">{calRemaining.toLocaleString()}</span>
             </div>
           </div>
-          <span className="text-[10px] font-bold text-gray-700 mt-1.5">Calories</span>
-          <span className="text-[9px] text-gray-400">left</span>
+          <span className="text-[10px] font-bold text-gray-700 mt-1.5">{t(lang, "calories")}</span>
+          <span className="text-[9px] text-gray-400">{t(lang, "left")}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function AiRecommendation() {
+function AiRecommendation({ lang }) {
   const suggestions = [
     { text: "Lunch suggestion: Chicken rice bowl · 580 kcal · 42gP", emoji: "🍛" },
     { text: "Dinner suggestion: Salmon + sweet potato · 640 kcal · 48gP", emoji: "🍣" },
@@ -136,7 +138,7 @@ function AiRecommendation() {
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={16} className="text-[#2D9C7E]" />
-        <h3 className="font-bold text-sm text-gray-800">AI Recommendations</h3>
+        <h3 className="font-bold text-sm text-gray-800">{t(lang, "ai_recommendations")}</h3>
       </div>
       <div className="flex flex-col gap-2">
         {suggestions.map((s, i) => (
@@ -154,13 +156,13 @@ function AiRecommendation() {
   );
 }
 
-function WaterCard() {
+function WaterCard({ lang }) {
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Droplets size={18} className="text-[#42A5F5]" />
-          <h3 className="font-bold text-sm text-gray-800">Water</h3>
+          <h3 className="font-bold text-sm text-gray-800">{t(lang, "water")}</h3>
         </div>
         <span className="text-xs text-gray-400 font-medium">0 / 2.5L</span>
       </div>
@@ -171,12 +173,12 @@ function WaterCard() {
   );
 }
 
-function MealsList({ meals }) {
+function MealsList({ meals, lang }) {
   if (meals.length === 0) {
     return (
       <div className="bg-gradient-to-br from-[#2E1065] to-[#4C1D95] rounded-3xl p-5 shadow-lg">
-        <h3 className="font-bold text-sm text-white mb-3">Today&apos;s Quest</h3>
-        <p className="text-xs text-white/60 text-center py-4">No meals logged yet. Start your quest!</p>
+        <h3 className="font-bold text-sm text-white mb-3">{t(lang, "todays_quest")}</h3>
+        <p className="text-xs text-white/60 text-center py-4">{t(lang, "no_meals_logged")}</p>
       </div>
     );
   }
@@ -186,7 +188,7 @@ function MealsList({ meals }) {
       <div className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/5" />
       <img src="/images/cat-cook.png" alt="Cat Cook" className="absolute right-0 bottom-0 w-24 h-24 object-contain opacity-80" />
 
-      <h3 className="font-bold text-sm text-white mb-4">Today&apos;s Quest</h3>
+      <h3 className="font-bold text-sm text-white mb-4">{t(lang, "todays_quest")}</h3>
       <div className="flex flex-col gap-3 relative z-10">
         {meals.map((meal) => {
           const time = new Date(meal.loggedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
@@ -218,7 +220,7 @@ function MealsList({ meals }) {
         href="/meals/add"
         className="relative z-10 flex items-center justify-center gap-2 mt-4 py-3 bg-[#2D9C7E] rounded-2xl text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,156,126,0.3)] hover:bg-[#258C6E] transition-colors"
       >
-        <Plus size={18} /> Log Meal Manually
+        <Plus size={18} /> {t(lang, "log_meal_manually")}
       </Link>
     </div>
   );
@@ -228,10 +230,12 @@ export default async function MealsPage() {
   const session = await auth();
   const data = session?.user?.id ? await getMealsData(session.user.id) : null;
 
+  const lang = await getLang();
+
   if (!data) {
     return (
       <div className="min-h-screen bg-[#F5F9F7] flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+        <p className="text-gray-400">{t(lang, "loading")}</p>
       </div>
     );
   }
@@ -277,8 +281,8 @@ export default async function MealsPage() {
 
           <div className="flex items-end justify-between">
             <div>
-              <h1 className="font-black text-2xl text-white">Daily Plan</h1>
-              <p className="text-xs text-white/60 mt-0.5">Level up your day!</p>
+              <h1 className="font-black text-2xl text-white">{t(lang, "daily_plan")}</h1>
+              <p className="text-xs text-white/60 mt-0.5">{t(lang, "level_up_day")}</p>
             </div>
             <img src="/images/cat-cook.png" alt="Cat Cook" className="w-32 h-32 object-contain -mb-1 -mb-10" />
           </div>
@@ -286,10 +290,10 @@ export default async function MealsPage() {
       </div>
 
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
-        <TodaysNutrition consumed={consumed} profile={profile} />
-        <AiRecommendation />
-        <WaterCard />
-        <MealsList meals={meals} />
+        <TodaysNutrition consumed={consumed} profile={profile} lang={lang} />
+        <AiRecommendation lang={lang} />
+        <WaterCard lang={lang} />
+        <MealsList meals={meals} lang={lang} />
       </div>
 
       <BottomNav />

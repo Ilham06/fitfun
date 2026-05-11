@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Trophy, Plus, UtensilsCrossed, User } from "lucide-react";
-
-const tabs = [
-  { href: "/dashboard", icon: Home, label: "Home" },
-  { href: "/progress", icon: Trophy, label: "Quests" },
-  { href: "/scan", icon: Plus, label: "", isFab: true },
-  { href: "/meals", icon: UtensilsCrossed, label: "Meals" },
-  { href: "/profile", icon: User, label: "Profile" },
-];
+import { useLanguage } from "@/components/language-provider";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const tabs = [
+    { href: "/dashboard", icon: Home, label: t("nav_home") },
+    { href: "/progress", icon: Trophy, label: t("nav_quests") },
+    { href: "/scan", icon: Plus, label: "", isFab: true },
+    { href: "/meals", icon: UtensilsCrossed, label: t("nav_meals") },
+    { href: "/profile", icon: User, label: t("nav_profile") },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">

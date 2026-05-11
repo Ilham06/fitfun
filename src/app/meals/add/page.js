@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Check, Search, X, ScanBarcode, Flame, Dumbbell, Wheat, Droplet, Minus } from "lucide-react";
 import { foodDatabase, calculateNutrition, searchFood } from "@/lib/food-database";
+import { useLanguage } from "@/components/language-provider";
 
 function FoodSearchInput({ onSelect, selectedFood }) {
   const [query, setQuery] = useState(selectedFood?.name || "");
@@ -115,15 +116,16 @@ function FoodSearchInput({ onSelect, selectedFood }) {
 
 export default function AddMealPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [mealType, setMealType] = useState("LUNCH");
   const [saving, setSaving] = useState(false);
   const [items, setItems] = useState([{ id: 1, foodId: null, name: "", portionG: 100, kcal: 0, protein: 0, carbs: 0, fat: 0 }]);
 
   const mealTypes = [
-    { id: "BREAKFAST", label: "Breakfast", icon: "☀️" },
-    { id: "LUNCH", label: "Lunch", icon: "🥗" },
-    { id: "DINNER", label: "Dinner", icon: "🌙" },
-    { id: "SNACK", label: "Snack", icon: "🍎" },
+    { id: "BREAKFAST", label: t("breakfast"), icon: "☀️" },
+    { id: "LUNCH", label: t("lunch"), icon: "🥗" },
+    { id: "DINNER", label: t("dinner"), icon: "🌙" },
+    { id: "SNACK", label: t("snack"), icon: "🍎" },
   ];
 
   const handleFoodSelect = (itemId, food) => {
@@ -208,8 +210,8 @@ export default function AddMealPage() {
             <ArrowLeft size={20} className="text-gray-800" />
           </Link>
           <div className="mt-4">
-            <h1 className="font-black text-2xl text-[#1E293B]">Log Meal</h1>
-            <p className="text-xs font-medium text-gray-500 mt-1">Search food or enter manually</p>
+            <h1 className="font-black text-2xl text-[#1E293B]">{t("log_meal")}</h1>
+            <p className="text-xs font-medium text-gray-500 mt-1">{t("search_food_manual")}</p>
           </div>
         </div>
         
@@ -222,7 +224,7 @@ export default function AddMealPage() {
       <div className="px-5 flex flex-col gap-5 pb-8 relative z-10">
         {/* Meal Type Picker */}
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F1F5F9]">
-          <span className="text-sm font-bold text-gray-800 mb-4 block">Meal Type</span>
+          <span className="text-sm font-bold text-gray-800 mb-4 block">{t("meal_type")}</span>
           <div className="grid grid-cols-4 gap-2.5">
             {mealTypes.map((type) => (
               <button
@@ -388,16 +390,16 @@ export default function AddMealPage() {
             <div className="w-5 h-5 rounded-full border-2 border-[#2D9C7E] flex items-center justify-center">
               <Plus size={12} strokeWidth={3} />
             </div>
-            Add Another Item
+            {t("add_another")}
           </button>
         </div>
 
         {/* Total Summary (Optional, but good to keep if valid) */}
         {totals.kcal > 0 && (
           <div className="bg-white rounded-3xl p-5 shadow-sm mt-2 border border-[#F1F5F9]">
-            <h3 className="font-bold text-sm text-gray-800 mb-3">Total</h3>
+            <h3 className="font-bold text-sm text-gray-800 mb-3">{t("total")}</h3>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-gray-500">Total Calories</span>
+              <span className="text-xs font-bold text-gray-500">{t("total_calories")}</span>
               <span className="font-black text-2xl text-[#2D9C7E]">{totals.kcal} <span className="text-sm font-bold">kcal</span></span>
             </div>
             <div className="grid grid-cols-3 gap-3">
@@ -451,7 +453,7 @@ export default function AddMealPage() {
           <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[#2D9C7E]">
             <Check size={12} strokeWidth={4} />
           </div>
-          {saving ? "Saving..." : `Log Meal (${items.length} ${items.length === 1 ? "item" : "items"})`}
+          {saving ? t("saving") : `${t("log_meal")} (${items.length} ${items.length === 1 ? t("item") : t("items")})`}
         </button>
       </div>
     </div>

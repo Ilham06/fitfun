@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Weight, Dumbbell, Percent, Calculator, Check, Loader2 } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 export default function BodyLogPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [weightKg, setWeightKg] = useState("");
   const [muscleMassKg, setMuscleMassKg] = useState("");
   const [bodyFatPct, setBodyFatPct] = useState("");
@@ -31,7 +33,7 @@ export default function BodyLogPage() {
 
   const handleSave = async () => {
     if (!weightKg || parseFloat(weightKg) <= 0) {
-      alert("Weight is required");
+      alert(t("weight_is_required"));
       return;
     }
 
@@ -51,11 +53,11 @@ export default function BodyLogPage() {
       if (res.ok) {
         router.push("/progress");
       } else {
-        alert(data.error || "Failed to save");
+        alert(data.error || t("failed_to_save"));
         setSaving(false);
       }
     } catch {
-      alert("Network error");
+      alert(t("network_error"));
       setSaving(false);
     }
   };
@@ -69,14 +71,14 @@ export default function BodyLogPage() {
         >
           <ArrowLeft size={18} className="text-gray-700" />
         </Link>
-        <h1 className="font-bold text-lg text-gray-800">Log Weight</h1>
+        <h1 className="font-bold text-lg text-gray-800">{t("log_weight")}</h1>
       </div>
 
       <div className="px-5 flex flex-col gap-4 pb-8">
         {source === "GPT_VISION" && (
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#F0EBF5] text-[#7B5EA7]">
-              AI Detected — review values
+              {t("ai_detected")}
             </span>
           </div>
         )}
@@ -85,7 +87,7 @@ export default function BodyLogPage() {
         {bmi && (
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0] flex items-center justify-between">
             <div>
-              <span className="text-xs text-gray-400">BMI (auto-calculated)</span>
+              <span className="text-xs text-gray-400">{t("bmi_auto")}</span>
               <div className="font-black text-2xl text-[#2D9C7E] mt-0.5">{bmi}</div>
             </div>
             <div className="w-11 h-11 rounded-xl bg-[#E8F5F0] flex items-center justify-center">
@@ -104,7 +106,7 @@ export default function BodyLogPage() {
                   <Weight size={16} className="text-[#2D9C7E]" />
                 </div>
                 <label className="text-sm font-semibold text-gray-800">
-                  Weight <span className="text-red-400">*</span>
+                  {t("weight")} <span className="text-red-400">*</span>
                 </label>
               </div>
               <div className="relative">
@@ -127,7 +129,7 @@ export default function BodyLogPage() {
                   <Dumbbell size={16} className="text-[#F57C00]" />
                 </div>
                 <label className="text-sm font-semibold text-gray-800">
-                  Muscle Mass <span className="text-[10px] text-gray-400">(optional)</span>
+                  {t("muscle_mass_label")} <span className="text-[10px] text-gray-400">({t("optional")})</span>
                 </label>
               </div>
               <div className="relative">
@@ -150,7 +152,7 @@ export default function BodyLogPage() {
                   <Percent size={16} className="text-[#EC4899]" />
                 </div>
                 <label className="text-sm font-semibold text-gray-800">
-                  Body Fat <span className="text-[10px] text-gray-400">(optional)</span>
+                  {t("body_fat_label")} <span className="text-[10px] text-gray-400">({t("optional")})</span>
                 </label>
               </div>
               <div className="relative">
@@ -179,7 +181,7 @@ export default function BodyLogPage() {
           ) : (
             <Check size={18} />
           )}
-          {saving ? "Saving..." : "Save Measurement"}
+          {saving ? t("saving") : t("save_measurement")}
         </button>
       </div>
     </div>

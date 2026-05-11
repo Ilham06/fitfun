@@ -5,6 +5,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/bottom-nav";
 import { ArrowLeft, Flame, Droplets, Bell, Camera, ImagePlus, Loader2, Sparkles } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 export default function ScanPage() {
   const [mode, setMode] = useState("food");
@@ -12,6 +13,7 @@ export default function ScanPage() {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const openCamera = () => cameraRef.current?.click();
   const openGallery = () => galleryRef.current?.click();
@@ -38,11 +40,11 @@ export default function ScanPage() {
             sessionStorage.setItem("scanResult", JSON.stringify(data.items));
             router.push("/scan/result");
           } else {
-            alert(data.error || "Scan failed");
+            alert(data.error || t("scan_failed"));
             setScanning(false);
           }
         } catch {
-          alert("Network error");
+          alert(t("network_error"));
           setScanning(false);
         }
       } else {
@@ -57,11 +59,11 @@ export default function ScanPage() {
             sessionStorage.setItem("bodyScanResult", JSON.stringify(data.measurements));
             router.push("/scan/body-confirm");
           } else {
-            alert(data.error || "Scan failed");
+            alert(data.error || t("scan_failed"));
             setScanning(false);
           }
         } catch {
-          alert("Network error");
+          alert(t("network_error"));
           setScanning(false);
         }
       }
@@ -94,9 +96,9 @@ export default function ScanPage() {
           <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mb-6">
             <Loader2 size={40} className="text-[#2D9C7E] animate-spin" />
           </div>
-          <h2 className="text-xl font-black text-gray-800">Analyzing with AI...</h2>
+          <h2 className="text-xl font-black text-gray-800">{t("analyzing_ai")}</h2>
           <p className="text-sm font-medium text-gray-500 mt-2 text-center px-8">
-            Please wait while we process your {mode === "food" ? "food" : "body"} scan.
+            {t("please_wait_scan")} {mode === "food" ? t("food") : t("body")} scan.
           </p>
         </div>
       )}
@@ -125,8 +127,8 @@ export default function ScanPage() {
           </div>
         </div>
         <div>
-          <h1 className="font-black text-3xl text-gray-900 tracking-tight">Scan & Earn</h1>
-          <p className="text-sm font-medium text-gray-500 mt-1">What would you like to scan today?</p>
+          <h1 className="font-black text-3xl text-gray-900 tracking-tight">{t("scan_earn")}</h1>
+          <p className="text-sm font-medium text-gray-500 mt-1">{t("what_scan_today")}</p>
         </div>
       </div>
 
@@ -143,9 +145,9 @@ export default function ScanPage() {
             <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-3 text-3xl transition-colors ${mode === "food" ? "bg-[#E8F5F0]" : "bg-gray-50"}`}>
               🍳
             </div>
-            <span className="font-bold text-base text-gray-800">Food Scan</span>
+            <span className="font-bold text-base text-gray-800">{t("food_scan")}</span>
             <span className="text-xs font-medium text-gray-400 mt-1 text-center leading-relaxed">
-              Meals or Barcodes
+              {t("meals_or_barcodes")}
             </span>
             <span className={`mt-3 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${mode === "food" ? "bg-[#2D9C7E] text-white shadow-sm" : "bg-gray-100 text-gray-500"}`}>
               +10 XP
@@ -162,9 +164,9 @@ export default function ScanPage() {
             <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-3 text-3xl transition-colors ${mode === "body" ? "bg-[#F0EBF5]" : "bg-gray-50"}`}>
               🔱
             </div>
-            <span className="font-bold text-base text-gray-800">Body Scan</span>
+            <span className="font-bold text-base text-gray-800">{t("body_scan")}</span>
             <span className="text-xs font-medium text-gray-400 mt-1 text-center leading-relaxed">
-              Photo or Tape
+              {t("photo_or_tape")}
             </span>
             <span className={`mt-3 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${mode === "body" ? "bg-[#7B5EA7] text-white shadow-sm" : "bg-gray-100 text-gray-500"}`}>
               +15 XP
@@ -181,12 +183,12 @@ export default function ScanPage() {
             className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-[#2D9C7E] text-white font-bold text-base shadow-[0_8px_16px_rgba(45,156,126,0.25)] hover:bg-[#258C6E] transition-all"
           >
             <Camera size={20} strokeWidth={2.5} />
-            Take a Photo
+            {t("take_photo")}
           </button>
 
           <div className="flex items-center gap-4 py-2">
             <div className="flex-1 h-[1px] bg-gray-100"></div>
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">or</span>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t("or")}</span>
             <div className="flex-1 h-[1px] bg-gray-100"></div>
           </div>
 
@@ -195,7 +197,7 @@ export default function ScanPage() {
             className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-gray-700 font-bold text-base border-2 border-[#E2E8F0] hover:border-gray-300 hover:bg-gray-50 transition-all"
           >
             <ImagePlus size={20} strokeWidth={2.5} className="text-gray-500" />
-            Upload from Gallery
+            {t("upload_gallery")}
           </button>
         </div>
       </div>

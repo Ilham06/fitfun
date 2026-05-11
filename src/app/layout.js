@@ -1,6 +1,8 @@
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import NotificationPrompt from "@/components/notification-prompt";
+import { LanguageProvider } from "@/components/language-provider";
+import { getLang } from "@/lib/get-lang";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -20,12 +22,16 @@ export const metadata = {
     "AI-powered nutrition tracking & body measurement PWA — scan food, track macros, measure progress.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const lang = await getLang();
+
   return (
-    <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
+    <html lang={lang} className={`${playfair.variable} ${jakarta.variable}`}>
       <body className="min-h-screen antialiased">
-        <NotificationPrompt />
-        {children}
+        <LanguageProvider initialLang={lang}>
+          <NotificationPrompt />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

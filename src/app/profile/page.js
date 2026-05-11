@@ -1,17 +1,22 @@
 import BottomNav from "@/components/bottom-nav";
-import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Flame, Droplets, Award } from "lucide-react";
+import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Flame, Droplets, Award, Globe } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getLang } from "@/lib/get-lang";
+import { t, getActivityLabel } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/language-switcher";
 
 export const metadata = { title: "Profile | FitScan" };
 
-const ACTIVITY_LABELS = {
-  sedentary: "Sedentary",
-  lightly_active: "Light Active",
-  moderately_active: "Moderate",
-  very_active: "Very Active",
-};
+function getActivityLabels(lang) {
+  return {
+    sedentary: t(lang, "activity_sedentary"),
+    lightly_active: t(lang, "activity_lightly_active"),
+    moderately_active: t(lang, "activity_moderately_active"),
+    very_active: t(lang, "activity_very_active"),
+  };
+}
 
 async function getProfileData(userId) {
   const user = await prisma.user.findUnique({
@@ -63,12 +68,13 @@ function ProfileHeader({ user, profile }) {
   );
 }
 
-function StatsCards({ profile }) {
+function StatsCards({ profile, lang }) {
+  const ACTIVITY_LABELS = getActivityLabels(lang);
   const stats = [
-    { icon: Target, label: "Program", value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase(), color: "text-[#2D9C7E]", bg: "bg-[#E8F5F0]" },
-    { icon: Zap, label: "Activity", value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel, color: "text-[#F59E0B]", bg: "bg-[#FFF8E1]" },
-    { icon: Weight, label: "Weight", value: `${profile.weightKg} kg`, color: "text-[#7C3AED]", bg: "bg-[#F3E8FF]" },
-    { icon: Ruler, label: "Height", value: `${profile.heightCm} cm`, color: "text-[#EC4899]", bg: "bg-[#FCE7F3]" },
+    { icon: Target, label: t(lang, "program"), value: profile.program.charAt(0) + profile.program.slice(1).toLowerCase(), color: "text-[#2D9C7E]", bg: "bg-[#E8F5F0]" },
+    { icon: Zap, label: t(lang, "activity"), value: ACTIVITY_LABELS[profile.activityLevel] || profile.activityLevel, color: "text-[#F59E0B]", bg: "bg-[#FFF8E1]" },
+    { icon: Weight, label: t(lang, "weight"), value: `${profile.weightKg} kg`, color: "text-[#7C3AED]", bg: "bg-[#F3E8FF]" },
+    { icon: Ruler, label: t(lang, "height"), value: `${profile.heightCm} cm`, color: "text-[#EC4899]", bg: "bg-[#FCE7F3]" },
   ];
 
   return (
@@ -91,21 +97,21 @@ function StatsCards({ profile }) {
   );
 }
 
-function MacroTargets({ profile }) {
+function MacroTargets({ profile, lang }) {
   const totalCal = profile.dailyCalTarget;
   const proteinPct = totalCal > 0 ? Math.round((profile.proteinTargetG * 4 / totalCal) * 100) : 0;
   const carbPct = totalCal > 0 ? Math.round((profile.carbTargetG * 4 / totalCal) * 100) : 0;
   const fatPct = totalCal > 0 ? Math.round((profile.fatTargetG * 9 / totalCal) * 100) : 0;
 
   const macros = [
-    { label: "Protein", value: `${profile.proteinTargetG}g`, pct: `${proteinPct}%`, color: "text-[#EF5350]", bg: "bg-[#FFEBEE]" },
-    { label: "Carbs", value: `${profile.carbTargetG}g`, pct: `${carbPct}%`, color: "text-[#42A5F5]", bg: "bg-[#E3F2FD]" },
-    { label: "Fat", value: `${profile.fatTargetG}g`, pct: `${fatPct}%`, color: "text-[#FFA726]", bg: "bg-[#FFF3E0]" },
+    { label: t(lang, "protein"), value: `${profile.proteinTargetG}g`, pct: `${proteinPct}%`, color: "text-[#EF5350]", bg: "bg-[#FFEBEE]" },
+    { label: t(lang, "carbs"), value: `${profile.carbTargetG}g`, pct: `${carbPct}%`, color: "text-[#42A5F5]", bg: "bg-[#E3F2FD]" },
+    { label: t(lang, "fat"), value: `${profile.fatTargetG}g`, pct: `${fatPct}%`, color: "text-[#FFA726]", bg: "bg-[#FFF3E0]" },
   ];
 
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
-      <h3 className="font-bold text-sm text-gray-800 mb-4">Daily Targets</h3>
+      <h3 className="font-bold text-sm text-gray-800 mb-4">{t(lang, "daily_targets")}</h3>
       <div className="grid grid-cols-3 gap-3">
         {macros.map((m) => (
           <div key={m.label} className={`text-center p-3 ${m.bg} rounded-2xl`}>
@@ -119,16 +125,17 @@ function MacroTargets({ profile }) {
   );
 }
 
-function SettingsList() {
+function SettingsList({ lang }) {
   const items = [
-    { icon: Pencil, label: "Edit Profile", desc: "Name, age, weight, height" },
-    { icon: Target, label: "Change Program", desc: "Bulking, Cutting, Maintenance" },
-    { icon: Bell, label: "Notifications", desc: "Reminders & alerts" },
-    { icon: Download, label: "Export Data", desc: "Download as CSV" },
+    { icon: Pencil, label: t(lang, "edit_profile"), desc: t(lang, "edit_profile_desc") },
+    { icon: Target, label: t(lang, "change_program"), desc: t(lang, "change_program_desc") },
+    { icon: Bell, label: t(lang, "notifications"), desc: t(lang, "notifications_desc") },
+    { icon: Download, label: t(lang, "export_data"), desc: t(lang, "export_data_desc") },
   ];
 
   return (
     <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-[#F0F0F0]">
+      <LanguageSwitcher />
       {items.map((item, i) => {
         const Icon = item.icon;
         return (
@@ -154,12 +161,13 @@ function SettingsList() {
 
 export default async function ProfilePage() {
   const session = await auth();
+  const lang = await getLang();
   const user = session?.user?.id ? await getProfileData(session.user.id) : null;
 
   if (!user?.profile) {
     return (
       <div className="min-h-screen bg-[#F5F9F7] flex items-center justify-center">
-        <p className="text-gray-400">Profile not found</p>
+        <p className="text-gray-400">{t(lang, "profile_not_found")}</p>
       </div>
     );
   }
@@ -202,8 +210,8 @@ export default async function ProfilePage() {
 
           <div className="flex items-end justify-between mt-10">
             <div>
-              <h1 className="font-black text-2xl text-white">Profile</h1>
-              <p className="text-xs text-white/60 mt-0.5">Manage your details</p>
+              <h1 className="font-black text-2xl text-white">{t(lang, "profile")}</h1>
+              <p className="text-xs text-white/60 mt-0.5">{t(lang, "manage_details")}</p>
             </div>
           </div>
         </div>
@@ -211,9 +219,9 @@ export default async function ProfilePage() {
 
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         <ProfileHeader user={user} profile={user.profile} />
-        <StatsCards profile={user.profile} />
-        <MacroTargets profile={user.profile} />
-        <SettingsList />
+        <StatsCards profile={user.profile} lang={lang} />
+        <MacroTargets profile={user.profile} lang={lang} />
+        <SettingsList lang={lang} />
 
         <form action={signOutAction}>
           <button
@@ -221,7 +229,7 @@ export default async function ProfilePage() {
             className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 text-red-500 font-bold text-sm hover:bg-red-100 transition-colors cursor-pointer"
           >
             <LogOut size={16} />
-            Sign Out
+            {t(lang, "signOut")}
           </button>
         </form>
       </div>
