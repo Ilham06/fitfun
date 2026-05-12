@@ -32,6 +32,7 @@ export default function OnboardingGoal() {
   const { dailyCalTarget, proteinTargetG, carbTargetG, fatTargetG } = calculateTargets({
     tdee,
     program: data.program,
+    weightKg,
   });
 
   async function handleSubmit() {

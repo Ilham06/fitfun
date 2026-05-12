@@ -18,14 +18,18 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "FitScan",
+  title: "FitFun",
   description:
     "AI-powered nutrition tracking & body measurement PWA — scan food, track macros, measure progress.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/fitfun-logo.png",
+    apple: "/fitfun-logo.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "FitScan",
+    title: "FitFun",
   },
   formatDetection: {
     telephone: false,
@@ -47,7 +51,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang} className={`${playfair.variable} ${jakarta.variable}`}>
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+        <link rel="apple-touch-icon" href="/fitfun-logo.png" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="min-h-screen antialiased">

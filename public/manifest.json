@@ -1,54 +1,24 @@
 {
-  "name": "FitScan - AI Nutrition Tracker",
-  "short_name": "FitScan",
+  "name": "FitFun - AI Nutrition Tracker",
+  "short_name": "FitFun",
   "description": "AI-powered nutrition tracking & body measurement — scan food, track macros, measure progress.",
   "start_url": "/dashboard",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F5F9F7",
+  "background_color": "#2D9C7E",
   "theme_color": "#2D9C7E",
   "categories": ["health", "fitness", "lifestyle"],
   "icons": [
     {
-      "src": "/icons/icon-72.svg",
-      "sizes": "72x72",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-96.svg",
-      "sizes": "96x96",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-128.svg",
-      "sizes": "128x128",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-144.svg",
-      "sizes": "144x144",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-152.svg",
-      "sizes": "152x152",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-192.svg",
+      "src": "/fitfun-logo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-384.svg",
-      "sizes": "384x384",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "/icons/icon-512.svg",
+      "src": "/fitfun-logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],

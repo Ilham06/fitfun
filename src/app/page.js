@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { BarChart3, Zap, Leaf, Heart } from "lucide-react";
+import { signInWithGoogle } from "@/lib/auth-actions";
 
 const features = [
   {
@@ -49,7 +49,6 @@ export default function SplashPage() {
           alt="FitFun Logo"
           width={88}
           height={88}
-          className="rounded-[22px] shadow-md"
           priority
         />
         <h1 className="mt-5 text-[42px] font-black tracking-tight leading-none">
@@ -88,18 +87,20 @@ export default function SplashPage() {
 
       {/* Bottom CTA */}
       <div className="px-6 pb-12">
-        <Link
-          href="/login"
-          className="flex items-center justify-center gap-3 w-full bg-white border border-[#E0DDD8] text-[#1A1814] font-semibold text-base rounded-full py-4 shadow-[0_2px_12px_rgba(0,0,0,0.08)] active:scale-[0.98] transition-transform"
-        >
-          <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.3-.2-2.7-.5-4z" fill="#FFC107"/>
-            <path d="M6.3 14.7l7 5.1C15.1 16.1 19.2 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3c-7.6 0-14.2 4.2-17.7 10.7z" fill="#FF3D00"/>
-            <path d="M24 45c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.5C29.6 36 26.9 37 24 37c-6 0-10.6-3.1-11.8-8.5l-7 5.4C8 40.5 15.4 45 24 45z" fill="#4CAF50"/>
-            <path d="M44.5 20H24v8.5h11.8c-.6 2.9-2.4 5.3-4.9 6.9l6.6 5.5C41.5 37.4 45 31.2 45 24c0-1.3-.2-2.7-.5-4z" fill="#1976D2"/>
-          </svg>
-          Continue with Google
-        </Link>
+        <form action={signInWithGoogle}>
+          <button
+            type="submit"
+            className="flex items-center justify-center gap-3 w-full bg-white border border-[#E0DDD8] text-[#1A1814] font-semibold text-base rounded-full py-4 shadow-[0_2px_12px_rgba(0,0,0,0.08)] active:scale-[0.98] transition-transform cursor-pointer"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            </svg>
+            Continue with Google
+          </button>
+        </form>
       </div>
     </div>
   );

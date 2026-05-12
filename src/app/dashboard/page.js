@@ -89,7 +89,7 @@ function HeroBanner({ name, userId, profile, level }) {
   }
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[250px]">
+    <div className="relative overflow-hidden bg-gradient-to-b from-[#87CEEB] via-[#B0E0F0] to-[#D4F1F9] px-5 pt-6 h-[230px]">
       <img
         src={bgImage}
         alt=""
