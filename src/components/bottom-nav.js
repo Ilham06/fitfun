@@ -18,9 +18,9 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="max-w-md mx-auto relative">
-        <div className="bg-[#1A1A3E] rounded-t-3xl px-4 pt-3 pb-4 flex items-end justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
+      <div className="max-w-md mx-auto px-3 pb-2">
+        <div className="bg-white rounded-[28px] shadow-[0_-2px_24px_rgba(0,0,0,0.10)] px-2 pt-3 pb-3 flex items-end justify-around relative">
           {tabs.map((tab) => {
             const isActive =
               pathname === tab.href || pathname.startsWith(tab.href + "/");
@@ -31,9 +31,9 @@ export default function BottomNav() {
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className="flex flex-col items-center -mt-8"
+                  className="flex flex-col items-center -mt-10 mb-1"
                 >
-                  <div className="w-14 h-14 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_20px_rgba(45,156,126,0.5)] border-4 border-[#1A1A3E]">
+                  <div className="w-14 h-14 rounded-full bg-[#2D9C7E] flex items-center justify-center shadow-[0_4px_18px_rgba(45,156,126,0.45)]">
                     <Icon size={26} className="text-white" strokeWidth={2.5} />
                   </div>
                 </Link>
@@ -44,20 +44,23 @@ export default function BottomNav() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="flex flex-col items-center gap-1 py-1 min-w-[48px]"
+                className="flex flex-col items-center gap-1 py-1 min-w-[52px]"
               >
                 <Icon
                   size={22}
-                  className={isActive ? "text-[#A78BFA]" : "text-gray-400"}
-                  fill={isActive ? "#A78BFA" : "none"}
+                  className={isActive ? "text-[#2D9C7E]" : "text-[#B5B0A6]"}
+                  strokeWidth={isActive ? 2 : 1.75}
                 />
                 <span
                   className={`text-[10px] font-medium ${
-                    isActive ? "text-[#A78BFA]" : "text-gray-400"
+                    isActive ? "text-[#2D9C7E]" : "text-[#B5B0A6]"
                   }`}
                 >
                   {tab.label}
                 </span>
+                {isActive && (
+                  <span className="block w-5 h-[3px] rounded-full bg-[#2D9C7E]" />
+                )}
               </Link>
             );
           })}
