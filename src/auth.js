@@ -20,6 +20,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
         token.onboardingDone = user.onboardingDone;
       }
       if (trigger === "update" || !token.onboardingDone) {
@@ -36,6 +39,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.picture;
         session.user.onboardingDone = token.onboardingDone;
       }
       return session;
