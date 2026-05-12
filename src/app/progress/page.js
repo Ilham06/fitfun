@@ -1,10 +1,11 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Flame, Droplets, Bell, Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
+import { Weight, Plus, Dumbbell, Percent, Calculator, Camera } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import HeaderStats from "@/components/header-stats";
 
 export const metadata = { title: "Body Progress | FitScan" };
 
@@ -17,30 +18,37 @@ async function getProgressData(userId) {
 
   const reversed = [...bodyLogs].reverse();
 
-  const weightPoints = reversed.filter((l) => l.weightKg).map((l) => l.weightKg);
-  const muscleMassPoints = reversed.filter((l) => l.muscleMassKg).map((l) => l.muscleMassKg);
-  const bodyFatPoints = reversed.filter((l) => l.bodyFatPct).map((l) => l.bodyFatPct);
-  const bmiPoints = reversed.filter((l) => l.bmi).map((l) => l.bmi);
+  const toEntries = (filter, getValue) =>
+    reversed.filter(filter).map((l) => ({ value: getValue(l), date: l.measuredAt }));
 
-  return { logs: bodyLogs, weightPoints, muscleMassPoints, bodyFatPoints, bmiPoints };
+  return {
+    logs: bodyLogs,
+    weightEntries: toEntries((l) => l.weightKg, (l) => l.weightKg),
+    muscleMassEntries: toEntries((l) => l.muscleMassKg, (l) => l.muscleMassKg),
+    bodyFatEntries: toEntries((l) => l.bodyFatPct, (l) => l.bodyFatPct),
+    bmiEntries: toEntries((l) => l.bmi, (l) => l.bmi),
+  };
 }
 
-function TrendChart({ title, points, unit, color, icon: Icon }) {
-  if (points.length === 0) return null;
+function TrendChart({ title, entries, unit, color, icon: Icon }) {
+  if (entries.length === 0) return null;
 
-  const max = Math.max(...points) + 0.5;
-  const min = Math.min(...points) - 0.5;
+  const values = entries.map((e) => e.value);
+  const max = Math.max(...values);
+  const min = Math.min(...values);
   const range = max - min || 1;
-  const latest = points[points.length - 1];
+  const latest = values[values.length - 1];
 
-  const chartPoints = points.map((val, i) => {
-    const x = 10 + (i / Math.max(points.length - 1, 1)) * 280;
-    const y = 110 - ((val - min) / range) * 100;
-    return { x, y, val };
-  });
+  const chartPoints = values.map((val, i) => ({
+    x: 10 + (i / Math.max(values.length - 1, 1)) * 280,
+    y: 110 - ((val - min) / range) * 100,
+  }));
 
   const pathData = chartPoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
   const gradientId = `grad_${title.replace(/\s/g, "")}`;
+
+  // Up to 5 most recent entries for the data row
+  const recent = entries.slice(-5);
 
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F0F0F0]">
@@ -51,14 +59,19 @@ function TrendChart({ title, points, unit, color, icon: Icon }) {
           </div>
           <h3 className="font-bold text-sm text-gray-800">{title}</h3>
         </div>
-        <span className="text-sm font-bold" style={{ color }}>{latest}{unit}</span>
+        <span
+          className="text-sm font-bold px-2.5 py-1 rounded-full"
+          style={{ color, backgroundColor: `${color}15` }}
+        >
+          {latest}{unit}
+        </span>
       </div>
 
       <div className="relative h-24">
         <svg className="w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="none">
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+              <stop offset="0%" stopColor={color} stopOpacity="0.2" />
               <stop offset="100%" stopColor={color} stopOpacity="0" />
             </linearGradient>
           </defs>
@@ -66,18 +79,39 @@ function TrendChart({ title, points, unit, color, icon: Icon }) {
             d={`${pathData} L ${chartPoints[chartPoints.length - 1].x} 120 L ${chartPoints[0].x} 120 Z`}
             fill={`url(#${gradientId})`}
           />
-          <path
-            d={pathData}
-            fill="none"
-            stroke={color}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {chartPoints.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="3" fill={color} />
-          ))}
+          <path d={pathData} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {chartPoints.map((p, i) => {
+            const isLast = i === chartPoints.length - 1;
+            return isLast ? (
+              <circle key={i} cx={p.x} cy={p.y} r="5" fill={color} />
+            ) : (
+              <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="white" stroke={color} strokeWidth="2" />
+            );
+          })}
         </svg>
+      </div>
+
+      {/* Data points row */}
+      <div className="mt-3 pt-3 border-t border-[#F5F5F5] flex items-end justify-between">
+        {recent.map((entry, i) => {
+          const isLast = i === recent.length - 1;
+          const dateStr = new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          return (
+            <div key={i} className="flex flex-col items-center gap-0.5">
+              <span
+                className="text-xs font-bold"
+                style={{ color: isLast ? color : "#374151" }}
+              >
+                {entry.value}{unit}
+              </span>
+              <span className="text-[9px] text-gray-400">{dateStr}</span>
+              <div
+                className="w-1 h-1 rounded-full mt-0.5"
+                style={{ backgroundColor: isLast ? color : "#E5E7EB" }}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -145,7 +179,7 @@ export default async function ProgressPage() {
     );
   }
 
-  const { logs, weightPoints, muscleMassPoints, bodyFatPoints, bmiPoints } = data;
+  const { logs, weightEntries, muscleMassEntries, bodyFatEntries, bmiEntries } = data;
 
   return (
     <div className="min-h-screen bg-[#F5F9F7] pb-24">
@@ -164,18 +198,8 @@ export default async function ProgressPage() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2">
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Flame size={14} className="text-orange-500" />
-              <span className="text-xs font-bold text-gray-700">12</span>
-            </div>
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Droplets size={14} className="text-blue-500" />
-              <span className="text-xs font-bold text-gray-700">230</span>
-            </div>
-            <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
-              <Bell size={14} className="text-gray-600" />
-            </div>
+          <div className="flex justify-end">
+            <HeaderStats userId={session.user.id} />
           </div>
 
           <div className="flex items-end justify-between">
@@ -190,10 +214,10 @@ export default async function ProgressPage() {
 
       <div className="px-5 flex flex-col gap-4 -mt-[30vh] relative z-10">
         {/* Charts */}
-        <TrendChart title={t(lang, "weight")} points={weightPoints} unit=" kg" color="#2D9C7E" icon={Weight} />
-        <TrendChart title={t(lang, "muscle_mass")} points={muscleMassPoints} unit=" kg" color="#F57C00" icon={Dumbbell} />
-        <TrendChart title={t(lang, "body_fat")} points={bodyFatPoints} unit="%" color="#EC4899" icon={Percent} />
-        <TrendChart title="BMI" points={bmiPoints} unit="" color="#7C3AED" icon={Calculator} />
+        <TrendChart title={t(lang, "weight")} entries={weightEntries} unit=" kg" color="#2D9C7E" icon={Weight} />
+        <TrendChart title={t(lang, "muscle_mass")} entries={muscleMassEntries} unit=" kg" color="#F57C00" icon={Dumbbell} />
+        <TrendChart title={t(lang, "body_fat")} entries={bodyFatEntries} unit="%" color="#EC4899" icon={Percent} />
+        <TrendChart title="BMI" entries={bmiEntries} unit="" color="#7C3AED" icon={Calculator} />
 
         {/* Action Buttons */}
         <div className="flex gap-3">

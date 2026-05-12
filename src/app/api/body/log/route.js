@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getSessionOrThrow, errorResponse, successResponse } from "@/lib/utils";
+import { awardXP, XP_AWARDS } from "@/lib/xp";
 
 export async function GET(request) {
   const { session, error } = await getSessionOrThrow();
@@ -49,10 +50,11 @@ export async function POST(request) {
     },
   });
 
-  await prisma.userProfile.update({
-    where: { userId: session.user.id },
-    data: { weightKg },
-  });
+  const isScan = source && source !== "MANUAL";
+  const [, xpResult] = await Promise.all([
+    prisma.userProfile.update({ where: { userId: session.user.id }, data: { weightKg } }),
+    awardXP(session.user.id, isScan ? XP_AWARDS.BODY_SCAN : XP_AWARDS.BODY_MANUAL),
+  ]);
 
-  return successResponse({ measurement }, 201);
+  return successResponse({ measurement, xp: xpResult }, 201);
 }

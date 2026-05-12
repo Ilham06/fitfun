@@ -55,6 +55,7 @@ export async function PATCH(request) {
   const { dailyCalTarget, proteinTargetG, carbTargetG, fatTargetG } = calculateTargets({
     tdee,
     program: updatedProgram,
+    weightKg: updatedWeight,
   });
 
   const [profile] = await prisma.$transaction([

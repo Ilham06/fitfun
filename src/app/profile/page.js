@@ -1,11 +1,14 @@
+import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Flame, Droplets, Award, Globe } from "lucide-react";
+import { Target, Zap, Weight, Ruler, Pencil, Bell, Download, LogOut, ChevronRight, Award } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getLang } from "@/lib/get-lang";
 import { t, getActivityLabel } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/language-switcher";
+import { getLevelInfo, getRank, RANK_COLORS } from "@/lib/xp";
+import HeaderStats from "@/components/header-stats";
 
 export const metadata = { title: "Profile | FitScan" };
 
@@ -27,21 +30,25 @@ async function getProfileData(userId) {
 }
 
 function ProfileHeader({ user, profile }) {
+  const { level, currentLevelXP, xpForNext, percentage } = getLevelInfo(profile.xp ?? 0);
+  const rank = getRank(level);
+  const rankColors = RANK_COLORS[rank];
+
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-[#FEF9E6] via-[#FCEB9C] to-[#FAD463] rounded-3xl p-5 shadow-md border border-[#FAD463]/40">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-2xl -mt-10 -mr-10"></div>
-      
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-2xl -mt-10 -mr-10" />
+
       <div className="relative z-10 flex items-center gap-4">
         <div className="relative">
           <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-[3px] border-white/80 shadow-md overflow-hidden">
-            <img 
-              src={profile.gender?.toLowerCase() === 'female' ? '/images/woman-avatar.png' : '/images/men-avatar.png'} 
-              alt="Avatar" 
-              className="w-full h-full object-cover" 
+            <img
+              src={profile.gender?.toLowerCase() === "female" ? "/images/woman-avatar.png" : "/images/men-avatar.png"}
+              alt="Avatar"
+              className="w-full h-full object-cover"
             />
           </div>
           <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-[#5D4037] to-[#8C6A3E] text-[10px] font-black text-white shadow-lg border-2 border-white z-20 whitespace-nowrap tracking-wide">
-            Lv. 12
+            Lv. {level}
           </span>
         </div>
 
@@ -50,17 +57,22 @@ function ProfileHeader({ user, profile }) {
           <p className="text-[11px] text-[#6A4F2B]/70 font-medium">{user.email}</p>
           <div className="mt-2 flex items-center gap-2">
             <div className="flex-1 h-2 bg-[#6A4F2B]/10 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#6A4F2B] to-[#997A53] rounded-full" style={{ width: "62%" }} />
+              <div
+                className="h-full bg-gradient-to-r from-[#6A4F2B] to-[#997A53] rounded-full transition-all duration-500"
+                style={{ width: `${percentage}%` }}
+              />
             </div>
-            <span className="text-[10px] text-[#6A4F2B] font-bold">3,106 / 5,000 XP</span>
+            <span className="text-[10px] text-[#6A4F2B] font-bold">
+              {currentLevelXP.toLocaleString()} / {xpForNext.toLocaleString()} XP
+            </span>
           </div>
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-            <Award size={20} className="text-[#F59E0B]" />
+          <div className={`w-10 h-10 rounded-full ${rankColors.bg} flex items-center justify-center shadow-sm`}>
+            <Award size={20} className={rankColors.icon} />
           </div>
-          <span className="text-[10px] text-[#6A4F2B] font-black">Gold</span>
+          <span className={`text-[10px] font-black ${rankColors.text}`}>{rank}</span>
           <span className="text-[8px] text-[#6A4F2B]/60 font-bold uppercase tracking-wider">Rank</span>
         </div>
       </div>
@@ -126,23 +138,22 @@ function MacroTargets({ profile, lang }) {
 }
 
 function SettingsList({ lang }) {
-  const items = [
-    { icon: Pencil, label: t(lang, "edit_profile"), desc: t(lang, "edit_profile_desc") },
-    { icon: Target, label: t(lang, "change_program"), desc: t(lang, "change_program_desc") },
-    { icon: Bell, label: t(lang, "notifications"), desc: t(lang, "notifications_desc") },
-    { icon: Download, label: t(lang, "export_data"), desc: t(lang, "export_data_desc") },
+  const linkedItems = [
+    { icon: Pencil, label: t(lang, "edit_profile"), desc: t(lang, "edit_profile_desc"), href: "/profile/edit" },
+    { icon: Target, label: t(lang, "change_program"), desc: t(lang, "change_program_desc"), href: "/profile/program" },
+    { icon: Bell, label: t(lang, "notifications"), desc: t(lang, "notifications_desc"), href: "/profile/notifications" },
   ];
 
   return (
     <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-[#F0F0F0]">
       <LanguageSwitcher />
-      {items.map((item, i) => {
+      {linkedItems.map((item, i) => {
         const Icon = item.icon;
         return (
-          <button
+          <Link
             key={item.label}
-            className={`w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-[#F8F9FA] transition-colors ${i < items.length - 1 ? "border-b border-[#F0F0F0]" : ""
-              }`}
+            href={item.href}
+            className={`flex items-center gap-3 px-5 py-4 hover:bg-[#F8F9FA] transition-colors border-b border-[#F0F0F0]`}
           >
             <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] flex items-center justify-center">
               <Icon size={16} className="text-gray-400" />
@@ -152,9 +163,21 @@ function SettingsList({ lang }) {
               <div className="text-[11px] text-gray-400">{item.desc}</div>
             </div>
             <ChevronRight size={16} className="text-gray-300" />
-          </button>
+          </Link>
         );
       })}
+      <div className="flex items-center gap-3 px-5 py-4 opacity-60">
+        <div className="w-9 h-9 rounded-xl bg-[#F5F5F5] flex items-center justify-center">
+          <Download size={16} className="text-gray-400" />
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-semibold text-gray-800">{t(lang, "export_data")}</div>
+          <div className="text-[11px] text-gray-400">{t(lang, "export_data_desc")}</div>
+        </div>
+        <span className="text-[10px] font-bold text-[#F59E0B] bg-[#FFF8E1] px-2.5 py-1 rounded-full border border-[#FDE68A]">
+          {t(lang, "coming_soon")}
+        </span>
+      </div>
     </div>
   );
 }
@@ -194,18 +217,8 @@ export default async function ProfilePage() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-end gap-2">
-            <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Flame size={14} className="text-orange-400" />
-              <span className="text-xs font-bold text-white">12</span>
-            </div>
-            <div className="flex items-center gap-1 bg-white/15 backdrop-blur-sm rounded-full px-2.5 py-1.5 shadow-sm">
-              <Droplets size={14} className="text-blue-300" />
-              <span className="text-xs font-bold text-white">230</span>
-            </div>
-            <div className="w-8 h-8 bg-white/15 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
-              <Bell size={14} className="text-white" />
-            </div>
+          <div className="flex justify-end">
+            <HeaderStats userId={session.user.id} dark />
           </div>
 
           <div className="flex items-end justify-between mt-10">

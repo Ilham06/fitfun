@@ -58,6 +58,11 @@ model UserProfile {
   proteinTargetG Int
   carbTargetG    Int
   fatTargetG     Int
+  xp             Int       @default(0)
+  level          Int       @default(1)
+  aiTip          String?
+  aiSuggestions  Json?
+  aiCachedAt     DateTime?
 }
 
 model Meal {
